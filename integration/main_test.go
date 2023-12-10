@@ -1,10 +1,10 @@
 package integration
 
 import (
-	"go-backend-template/internal/handler"
-	"go-backend-template/internal/migration"
-	"go-backend-template/internal/pkg/config"
-	"go-backend-template/internal/repository"
+	"github.com/pikachu0310/hackathon-23winter/internal/handler"
+	"github.com/pikachu0310/hackathon-23winter/internal/migration"
+	"github.com/pikachu0310/hackathon-23winter/internal/pkg/config"
+	"github.com/pikachu0310/hackathon-23winter/internal/repository"
 	"log"
 	"net/http/httptest"
 	"strings"
