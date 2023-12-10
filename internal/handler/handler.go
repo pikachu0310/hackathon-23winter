@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"go-backend-template/internal/repository"
+	"github.com/pikachu0310/hackathon-23winter/internal/repository"
 
 	"github.com/labstack/echo/v4"
 )

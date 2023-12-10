@@ -1,4 +1,4 @@
-module go-backend-template // NOTE: github.com/ORGANIZATION/REPO_NAME などが好ましい
+module github.com/pikachu0310/hackathon-23winter // NOTE: github.com/ORGANIZATION/REPO_NAME などが好ましい
 
 go 1.20
 
