@@ -10,14 +10,12 @@ import (
 type (
 	// users table
 	User struct {
-		ID    uuid.UUID `db:"id"`
-		Name  string    `db:"name"`
-		Email string    `db:"email"`
+		ID   uuid.UUID `db:"id"`
+		Name string    `db:"name"`
 	}
 
 	CreateUserParams struct {
-		Name  string
-		Email string
+		Name string
 	}
 )
 
@@ -32,7 +30,7 @@ func (r *Repository) GetUsers(ctx context.Context) ([]*User, error) {
 
 func (r *Repository) CreateUser(ctx context.Context, params CreateUserParams) (uuid.UUID, error) {
 	userID := uuid.New()
-	if _, err := r.db.ExecContext(ctx, "INSERT INTO users (id, name, email) VALUES (?, ?, ?)", userID, params.Name, params.Email); err != nil {
+	if _, err := r.db.ExecContext(ctx, "INSERT INTO users (id, name) VALUES (?, ?)", userID, params.Name); err != nil {
 		return uuid.Nil, fmt.Errorf("insert user: %w", err)
 	}
 
