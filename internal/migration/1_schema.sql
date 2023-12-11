@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS kemono (
     name VARCHAR(255),
     description VARCHAR(255),
     character_chip INT,
+    is_player BOOLEAN NOT NULL DEFAULT FALSE,
+    player_id VARCHAR(36),
     is_owned BOOLEAN NOT NULL DEFAULT FALSE,
     owner_id VARCHAR(36),
     is_in_field BOOLEAN NOT NULL DEFAULT TRUE,
@@ -24,6 +26,9 @@ CREATE TABLE IF NOT EXISTS kemono (
     parent2_id VARCHAR(36),
     has_child BOOLEAN NOT NULL DEFAULT FALSE,
     child_id VARCHAR(36),
+    hp INT,
+    attack INT,
+    defense INT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
