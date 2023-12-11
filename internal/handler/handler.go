@@ -30,4 +30,13 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		userAPI.POST("", h.CreateUser)
 		userAPI.GET("/:userID", h.GetUser)
 	}
+
+	// kemono API
+	kemonoAPI := api.Group("/kemonos")
+	{
+		kemonoAPI.GET("", h.GetKemonos)
+		kemonoAPI.POST("", h.CreateKemono)
+		kemonoAPI.GET("/:kemonoID", h.GetKemono)
+		kemonoAPI.GET("/fields/:fieldID", h.GetKemonosByField)
+	}
 }
