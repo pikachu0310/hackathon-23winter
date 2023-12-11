@@ -11,26 +11,31 @@ import (
 type (
 	/*
 		CREATE TABLE IF NOT EXISTS kemono (
-		    id VARCHAR(36) NOT NULL,
-		    image MEDIUMBLOB NOT NULL,
-		    prompt VARCHAR(255),
-		    name VARCHAR(255),
-		    description VARCHAR(255),
-		    character_chip INT,
-		    is_owned BOOLEAN NOT NULL DEFAULT FALSE,
-		    owner_id VARCHAR(36),
-		    is_in_field BOOLEAN NOT NULL DEFAULT TRUE,
-		    is_boss BOOLEAN NOT NULL DEFAULT FALSE,
-		    field INT,
-		    x INT,
-		    y INT,
-		    has_parent BOOLEAN NOT NULL DEFAULT FALSE,
-		    parent1_id VARCHAR(36),
-		    parent2_id VARCHAR(36),
-		    has_child BOOLEAN NOT NULL DEFAULT FALSE,
-		    child_id VARCHAR(36),
-		    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		    PRIMARY KEY (id)
+			id VARCHAR(36) NOT NULL,
+			image MEDIUMBLOB NOT NULL,
+			prompt VARCHAR(255),
+			name VARCHAR(255),
+			description VARCHAR(255),
+			character_chip INT,
+			is_player BOOLEAN NOT NULL DEFAULT FALSE,
+			player_id VARCHAR(36),
+			is_owned BOOLEAN NOT NULL DEFAULT FALSE,
+			owner_id VARCHAR(36),
+			is_in_field BOOLEAN NOT NULL DEFAULT TRUE,
+			is_boss BOOLEAN NOT NULL DEFAULT FALSE,
+			field INT,
+			x INT,
+			y INT,
+			has_parent BOOLEAN NOT NULL DEFAULT FALSE,
+			parent1_id VARCHAR(36),
+			parent2_id VARCHAR(36),
+			has_child BOOLEAN NOT NULL DEFAULT FALSE,
+			child_id VARCHAR(36),
+			hp INT,
+			attack INT,
+			defense INT,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY (id)
 		);
 	*/
 
@@ -41,6 +46,8 @@ type (
 		Name          string    `db:"name"`
 		Description   string    `db:"description"`
 		CharacterChip int       `db:"character_chip"`
+		IsPlayer      bool      `db:"is_player"`
+		PlayerID      uuid.UUID `db:"player_id"`
 		IsOwned       bool      `db:"is_owned"`
 		OwnerID       uuid.UUID `db:"owner_id"`
 		IsInField     bool      `db:"is_in_field"`
@@ -53,6 +60,9 @@ type (
 		Parent2ID     uuid.UUID `db:"parent2_id"`
 		HasChild      bool      `db:"has_child"`
 		ChildID       uuid.UUID `db:"child_id"`
+		Hp            int       `db:"hp"`
+		Attack        int       `db:"attack"`
+		Defense       int       `db:"defense"`
 		CreatedAt     string    `db:"created_at"`
 	}
 )
@@ -130,6 +140,15 @@ func (r *Repository) GetKemonos(ctx context.Context) ([]*Kemono, error) {
 func (r *Repository) GetKemono(ctx context.Context, kemonoID uuid.UUID) (*Kemono, error) {
 	kemono := &Kemono{}
 	if err := r.db.GetContext(ctx, kemono, "SELECT * FROM kemono WHERE id = ?", kemonoID); err != nil {
+		return nil, fmt.Errorf("select kemono: %w", err)
+	}
+
+	return kemono, nil
+}
+
+func (r *Repository) GetKemonosByField(ctx context.Context, field int) ([]*Kemono, error) {
+	kemono := []*Kemono{}
+	if err := r.db.GetContext(ctx, kemono, "SELECT * FROM kemono WHERE field = ?", field); err != nil {
 		return nil, fmt.Errorf("select kemono: %w", err)
 	}
 
