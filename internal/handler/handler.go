@@ -38,6 +38,7 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		kemonoAPI.POST("", h.CreateKemono)
 		kemonoAPI.GET("/:kemonoID", h.GetKemono)
 		kemonoAPI.GET("/fields/:fieldID", h.GetKemonosByField)
+		kemonoAPI.GET("/reset", h.ResetKemonos)
 	}
 
 	// test API

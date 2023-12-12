@@ -249,3 +249,12 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, createdKemonoUUID)
 }
+
+// GET /api/v1/kemonos/reset
+func (h *Handler) ResetKemonos(c echo.Context) error {
+	if err := h.repo.ResetKemonos(c.Request().Context()); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	return c.NoContent(http.StatusOK)
+}

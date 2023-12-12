@@ -1,10 +1,5 @@
 -- +goose Up
-CREATE TABLE IF NOT EXISTS users (
-	id VARCHAR(36) NOT NULL,
-	name VARCHAR(255) NOT NULL,
-	PRIMARY KEY (id)
-);
-
+-- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS kemono (
     id VARCHAR(36) NOT NULL,
     image MEDIUMBLOB NOT NULL,
@@ -32,3 +27,9 @@ CREATE TABLE IF NOT EXISTS kemono (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
+-- +goose StatementEnd
+
+-- +goose Down
+-- +goose StatementBegin
+DROP TABLE IF EXISTS kemono;
+-- +goose StatementEnd

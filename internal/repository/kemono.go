@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/pikachu0310/hackathon-23winter/internal/migration"
 	"reflect"
 	"strings"
 )
@@ -212,4 +213,13 @@ func (r *Repository) GetKemonosByField(ctx context.Context, field int) ([]Kemono
 	}
 
 	return kemono, nil
+}
+
+func (r *Repository) ResetKemonos(ctx context.Context) error {
+	err := migration.ResetKemonoTable(r.db.DB)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
