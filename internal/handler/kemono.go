@@ -72,30 +72,30 @@ type (
 
 func kemonoToGetKemonoResponse(kemono *repository.Kemono) GetKemonoResponse {
 	return GetKemonoResponse{
-		ID:            kemono.ID,
+		ID:            *kemono.ID,
 		Image:         kemono.Image,
-		Prompt:        kemono.Prompt,
-		Name:          kemono.Name,
-		Description:   kemono.Description,
-		CharacterChip: kemono.CharacterChip,
-		IsPlayer:      kemono.IsPlayer,
-		PlayerID:      kemono.PlayerID,
-		IsOwned:       kemono.IsOwned,
-		OwnerID:       kemono.OwnerID,
-		IsInField:     kemono.IsInField,
-		IsBoss:        kemono.IsBoss,
-		Field:         kemono.Field,
-		X:             kemono.X,
-		Y:             kemono.Y,
-		HasParent:     kemono.HasParent,
-		Parent1ID:     kemono.Parent1ID,
-		Parent2ID:     kemono.Parent2ID,
-		HasChild:      kemono.HasChild,
-		ChildID:       kemono.ChildID,
-		Hp:            kemono.Hp,
-		Attack:        kemono.Attack,
-		Defense:       kemono.Defense,
-		CreatedAt:     kemono.CreatedAt,
+		Prompt:        *kemono.Prompt,
+		Name:          *kemono.Name,
+		Description:   *kemono.Description,
+		CharacterChip: *kemono.CharacterChip,
+		IsPlayer:      *kemono.IsPlayer,
+		PlayerID:      *kemono.PlayerID,
+		IsOwned:       *kemono.IsOwned,
+		OwnerID:       *kemono.OwnerID,
+		IsInField:     *kemono.IsInField,
+		IsBoss:        *kemono.IsBoss,
+		Field:         *kemono.Field,
+		X:             *kemono.X,
+		Y:             *kemono.Y,
+		HasParent:     *kemono.HasParent,
+		Parent1ID:     *kemono.Parent1ID,
+		Parent2ID:     *kemono.Parent2ID,
+		HasChild:      *kemono.HasChild,
+		ChildID:       *kemono.ChildID,
+		Hp:            *kemono.Hp,
+		Attack:        *kemono.Attack,
+		Defense:       *kemono.Defense,
+		CreatedAt:     *kemono.CreatedAt,
 	}
 }
 
@@ -157,13 +157,13 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 	id2, _ := uuid.Parse("00000000-0000-0000-0000-000000000002")
 	id3, _ := uuid.Parse("00000000-0000-0000-0000-000000000003")
 
-	kemono := &repository.Kemono{
+	kemonoParams := &repository.KemonoParams{
 		ID:            id1,
 		Image:         images.TestKemonoImage,
 		Prompt:        "player",
 		Name:          "player",
 		Description:   "player",
-		CharacterChip: 0,
+		CharacterChip: 1,
 		IsPlayer:      true,
 		PlayerID:      id1,
 		IsOwned:       false,
@@ -182,18 +182,18 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		Attack:        10,
 		Defense:       10,
 	}
-	createdKemonoUUID, err := h.repo.CreateKemono(c.Request().Context(), kemono)
+	createdKemonoUUID, err := h.repo.CreateKemono(c.Request().Context(), kemonoParams.ToKemono())
 	if err != nil {
 		return err
 	}
 
-	kemono = &repository.Kemono{
+	kemonoParams = &repository.KemonoParams{
 		ID:            id2,
 		Image:         images.TestKemonoImage,
 		Prompt:        "test1",
 		Name:          "test1",
 		Description:   "test1",
-		CharacterChip: 1,
+		CharacterChip: 2,
 		IsPlayer:      false,
 		PlayerID:      uuid.Nil,
 		IsOwned:       false,
@@ -212,18 +212,18 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		Attack:        5,
 		Defense:       2,
 	}
-	createdKemonoUUID, err = h.repo.CreateKemono(c.Request().Context(), kemono)
+	createdKemonoUUID, err = h.repo.CreateKemono(c.Request().Context(), kemonoParams.ToKemono())
 	if err != nil {
 		return err
 	}
 
-	kemono = &repository.Kemono{
+	kemonoParams = &repository.KemonoParams{
 		ID:            id3,
 		Image:         images.TestKemonoImage,
 		Prompt:        "test2",
 		Name:          "test2",
 		Description:   "test2",
-		CharacterChip: 2,
+		CharacterChip: 3,
 		IsPlayer:      false,
 		PlayerID:      uuid.Nil,
 		IsOwned:       false,
@@ -242,7 +242,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		Attack:        7,
 		Defense:       4,
 	}
-	createdKemonoUUID, err = h.repo.CreateKemono(c.Request().Context(), kemono)
+	createdKemonoUUID, err = h.repo.CreateKemono(c.Request().Context(), kemonoParams.ToKemono())
 	if err != nil {
 		return err
 	}

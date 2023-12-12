@@ -40,32 +40,88 @@ type (
 	*/
 
 	Kemono struct {
-		ID            uuid.UUID `db:"id"`
-		Image         []byte    `db:"image"`
-		Prompt        string    `db:"prompt"`
-		Name          string    `db:"name"`
-		Description   string    `db:"description"`
-		CharacterChip int       `db:"character_chip"`
-		IsPlayer      bool      `db:"is_player"`
-		PlayerID      uuid.UUID `db:"player_id"`
-		IsOwned       bool      `db:"is_owned"`
-		OwnerID       uuid.UUID `db:"owner_id"`
-		IsInField     bool      `db:"is_in_field"`
-		IsBoss        bool      `db:"is_boss"`
-		Field         int       `db:"field"`
-		X             int       `db:"x"`
-		Y             int       `db:"y"`
-		HasParent     bool      `db:"has_parent"`
-		Parent1ID     uuid.UUID `db:"parent1_id"`
-		Parent2ID     uuid.UUID `db:"parent2_id"`
-		HasChild      bool      `db:"has_child"`
-		ChildID       uuid.UUID `db:"child_id"`
-		Hp            int       `db:"hp"`
-		Attack        int       `db:"attack"`
-		Defense       int       `db:"defense"`
-		CreatedAt     string    `db:"created_at"`
+		ID            *uuid.UUID `db:"id"`
+		Image         []byte     `db:"image"`
+		Prompt        *string    `db:"prompt"`
+		Name          *string    `db:"name"`
+		Description   *string    `db:"description"`
+		CharacterChip *int       `db:"character_chip"`
+		IsPlayer      *bool      `db:"is_player"`
+		PlayerID      *uuid.UUID `db:"player_id"`
+		IsOwned       *bool      `db:"is_owned"`
+		OwnerID       *uuid.UUID `db:"owner_id"`
+		IsInField     *bool      `db:"is_in_field"`
+		IsBoss        *bool      `db:"is_boss"`
+		Field         *int       `db:"field"`
+		X             *int       `db:"x"`
+		Y             *int       `db:"y"`
+		HasParent     *bool      `db:"has_parent"`
+		Parent1ID     *uuid.UUID `db:"parent1_id"`
+		Parent2ID     *uuid.UUID `db:"parent2_id"`
+		HasChild      *bool      `db:"has_child"`
+		ChildID       *uuid.UUID `db:"child_id"`
+		Hp            *int       `db:"hp"`
+		Attack        *int       `db:"attack"`
+		Defense       *int       `db:"defense"`
+		CreatedAt     *string    `db:"created_at"`
+	}
+
+	KemonoParams struct {
+		ID            uuid.UUID
+		Image         []byte
+		Prompt        string
+		Name          string
+		Description   string
+		CharacterChip int
+		IsPlayer      bool
+		PlayerID      uuid.UUID
+		IsOwned       bool
+		OwnerID       uuid.UUID
+		IsInField     bool
+		IsBoss        bool
+		Field         int
+		X             int
+		Y             int
+		HasParent     bool
+		Parent1ID     uuid.UUID
+		Parent2ID     uuid.UUID
+		HasChild      bool
+		ChildID       uuid.UUID
+		Hp            int
+		Attack        int
+		Defense       int
+		CreatedAt     string
 	}
 )
+
+func (kemonoParams *KemonoParams) ToKemono() *Kemono {
+	return &Kemono{
+		ID:            &kemonoParams.ID,
+		Image:         kemonoParams.Image,
+		Prompt:        &kemonoParams.Prompt,
+		Name:          &kemonoParams.Name,
+		Description:   &kemonoParams.Description,
+		CharacterChip: &kemonoParams.CharacterChip,
+		IsPlayer:      &kemonoParams.IsPlayer,
+		PlayerID:      &kemonoParams.PlayerID,
+		IsOwned:       &kemonoParams.IsOwned,
+		OwnerID:       &kemonoParams.OwnerID,
+		IsInField:     &kemonoParams.IsInField,
+		IsBoss:        &kemonoParams.IsBoss,
+		Field:         &kemonoParams.Field,
+		X:             &kemonoParams.X,
+		Y:             &kemonoParams.Y,
+		HasParent:     &kemonoParams.HasParent,
+		Parent1ID:     &kemonoParams.Parent1ID,
+		Parent2ID:     &kemonoParams.Parent2ID,
+		HasChild:      &kemonoParams.HasChild,
+		ChildID:       &kemonoParams.ChildID,
+		Hp:            &kemonoParams.Hp,
+		Attack:        &kemonoParams.Attack,
+		Defense:       &kemonoParams.Defense,
+		CreatedAt:     &kemonoParams.CreatedAt,
+	}
+}
 
 func isZeroValue(x interface{}) bool {
 	return reflect.DeepEqual(x, reflect.Zero(reflect.TypeOf(x)).Interface())
@@ -95,8 +151,9 @@ func addFieldsForKemono(queryBase *string, values *string, args *[]interface{}, 
 }
 
 func (r *Repository) CreateKemono(ctx context.Context, kemono *Kemono) (uuid.UUID, error) {
-	if kemono.ID == uuid.Nil {
-		kemono.ID = uuid.New() // IDを設定
+	if kemono.ID == nil {
+		newUUID := uuid.New()
+		kemono.ID = &newUUID // IDを設定
 	}
 	query := "INSERT INTO kemono (id"
 	values := "(?"
@@ -110,7 +167,7 @@ func (r *Repository) CreateKemono(ctx context.Context, kemono *Kemono) (uuid.UUI
 		return uuid.Nil, fmt.Errorf("insert kemono: %w", err)
 	}
 
-	return kemono.ID, nil
+	return *kemono.ID, nil
 }
 
 func (r *Repository) UpdateKemono(ctx context.Context, kemono *Kemono) error {
