@@ -35,6 +35,9 @@ services:
       interval: 1s
       timeout: 10s
       retries: 30
+    networks:
+      default:
+        ipv4_address: 172.24.0.2
 
   adminer:
     image: adminer:latest
@@ -43,3 +46,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.24.0.0/16
