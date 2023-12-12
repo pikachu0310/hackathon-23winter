@@ -32,7 +32,7 @@ type (
 func (h *Handler) GetUsers(c echo.Context) error {
 	users, err := h.repo.GetUsers(c.Request().Context())
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
 	res := make(GetUsersResponse, len(users))
