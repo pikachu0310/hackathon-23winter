@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS kemono (
     parent2_id VARCHAR(36) DEFAULT "",
     has_child BOOLEAN NOT NULL DEFAULT FALSE,
     child_id VARCHAR(36) DEFAULT "",
+    max_hp INT DEFAULT -1,
     hp INT DEFAULT -1,
     attack INT DEFAULT -1,
     defense INT DEFAULT -1,

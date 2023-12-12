@@ -12,31 +12,32 @@ import (
 type (
 	/*
 		CREATE TABLE IF NOT EXISTS kemono (
-			id VARCHAR(36) NOT NULL,
-			image MEDIUMBLOB NOT NULL,
-			prompt VARCHAR(255),
-			name VARCHAR(255),
-			description VARCHAR(255),
-			character_chip INT,
-			is_player BOOLEAN NOT NULL DEFAULT FALSE,
-			player_id VARCHAR(36),
-			is_owned BOOLEAN NOT NULL DEFAULT FALSE,
-			owner_id VARCHAR(36),
-			is_in_field BOOLEAN NOT NULL DEFAULT TRUE,
-			is_boss BOOLEAN NOT NULL DEFAULT FALSE,
-			field INT,
-			x INT,
-			y INT,
-			has_parent BOOLEAN NOT NULL DEFAULT FALSE,
-			parent1_id VARCHAR(36),
-			parent2_id VARCHAR(36),
-			has_child BOOLEAN NOT NULL DEFAULT FALSE,
-			child_id VARCHAR(36),
-			hp INT,
-			attack INT,
-			defense INT,
-			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			PRIMARY KEY (id)
+		    id VARCHAR(36) NOT NULL,
+		    image MEDIUMBLOB NOT NULL,
+		    prompt VARCHAR(255) DEFAULT "",
+		    name VARCHAR(255) DEFAULT "",
+		    description VARCHAR(255) DEFAULT "",
+		    character_chip INT DEFAULT -1,
+		    is_player BOOLEAN NOT NULL DEFAULT FALSE DEFAULT FALSE,
+		    player_id VARCHAR(36) DEFAULT "",
+		    is_owned BOOLEAN NOT NULL DEFAULT FALSE DEFAULT FALSE,
+		    owner_id VARCHAR(36) DEFAULT "",
+		    is_in_field BOOLEAN NOT NULL DEFAULT TRUE DEFAULT TRUE,
+		    is_boss BOOLEAN NOT NULL DEFAULT FALSE,
+		    field INT DEFAULT -1,
+		    x INT DEFAULT -1,
+		    y INT DEFAULT -1,
+		    has_parent BOOLEAN NOT NULL DEFAULT FALSE,
+		    parent1_id VARCHAR(36) DEFAULT "",
+		    parent2_id VARCHAR(36) DEFAULT "",
+		    has_child BOOLEAN NOT NULL DEFAULT FALSE,
+		    child_id VARCHAR(36) DEFAULT "",
+		    max_hp INT DEFAULT -1,
+		    hp INT DEFAULT -1,
+		    attack INT DEFAULT -1,
+		    defense INT DEFAULT -1,
+		    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		    PRIMARY KEY (id)
 		);
 	*/
 
@@ -61,6 +62,7 @@ type (
 		Parent2ID     *uuid.UUID `db:"parent2_id"`
 		HasChild      *bool      `db:"has_child"`
 		ChildID       *uuid.UUID `db:"child_id"`
+		MaxHp         *int       `db:"max_hp"`
 		Hp            *int       `db:"hp"`
 		Attack        *int       `db:"attack"`
 		Defense       *int       `db:"defense"`
@@ -88,6 +90,7 @@ type (
 		Parent2ID     uuid.UUID
 		HasChild      bool
 		ChildID       uuid.UUID
+		MaxHp         int
 		Hp            int
 		Attack        int
 		Defense       int
@@ -117,6 +120,7 @@ func (kemonoParams *KemonoParams) ToKemono() *Kemono {
 		Parent2ID:     &kemonoParams.Parent2ID,
 		HasChild:      &kemonoParams.HasChild,
 		ChildID:       &kemonoParams.ChildID,
+		MaxHp:         &kemonoParams.MaxHp,
 		Hp:            &kemonoParams.Hp,
 		Attack:        &kemonoParams.Attack,
 		Defense:       &kemonoParams.Defense,

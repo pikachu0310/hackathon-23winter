@@ -13,30 +13,31 @@ import (
 type (
 	/*
 		Kemono struct {
-			ID            uuid.UUID `db:"id"`
-			Image         []byte    `db:"image"`
-			Prompt        string    `db:"prompt"`
-			Name          string    `db:"name"`
-			Description   string    `db:"description"`
-			CharacterChip int       `db:"character_chip"`
-			IsPlayer      bool      `db:"is_player"`
-			PlayerID      uuid.UUID `db:"player_id"`
-			IsOwned       bool      `db:"is_owned"`
-			OwnerID       uuid.UUID `db:"owner_id"`
-			IsInField     bool      `db:"is_in_field"`
-			IsBoss        bool      `db:"is_boss"`
-			Field         int       `db:"field"`
-			X             int       `db:"x"`
-			Y             int       `db:"y"`
-			HasParent     bool      `db:"has_parent"`
-			Parent1ID     uuid.UUID `db:"parent1_id"`
-			Parent2ID     uuid.UUID `db:"parent2_id"`
-			HasChild      bool      `db:"has_child"`
-			ChildID       uuid.UUID `db:"child_id"`
-			Hp            int       `db:"hp"`
-			Attack        int       `db:"attack"`
-			Defense       int       `db:"defense"`
-			CreatedAt     string    `db:"created_at"`
+			ID            *uuid.UUID `db:"id"`
+			Image         []byte     `db:"image"`
+			Prompt        *string    `db:"prompt"`
+			Name          *string    `db:"name"`
+			Description   *string    `db:"description"`
+			CharacterChip *int       `db:"character_chip"`
+			IsPlayer      *bool      `db:"is_player"`
+			PlayerID      *uuid.UUID `db:"player_id"`
+			IsOwned       *bool      `db:"is_owned"`
+			OwnerID       *uuid.UUID `db:"owner_id"`
+			IsInField     *bool      `db:"is_in_field"`
+			IsBoss        *bool      `db:"is_boss"`
+			Field         *int       `db:"field"`
+			X             *int       `db:"x"`
+			Y             *int       `db:"y"`
+			HasParent     *bool      `db:"has_parent"`
+			Parent1ID     *uuid.UUID `db:"parent1_id"`
+			Parent2ID     *uuid.UUID `db:"parent2_id"`
+			HasChild      *bool      `db:"has_child"`
+			ChildID       *uuid.UUID `db:"child_id"`
+			MaxHp         *int       `db:"max_hp"`
+			Hp            *int       `db:"hp"`
+			Attack        *int       `db:"attack"`
+			Defense       *int       `db:"defense"`
+			CreatedAt     *string    `db:"created_at"`
 		}
 	*/
 
@@ -63,6 +64,7 @@ type (
 		Parent2ID     uuid.UUID `json:"parent2_id"`
 		HasChild      bool      `json:"has_child"`
 		ChildID       uuid.UUID `json:"child_id"`
+		MaxHp         int       `json:"max_hp"`
 		Hp            int       `json:"hp"`
 		Attack        int       `json:"attack"`
 		Defense       int       `json:"defense"`
@@ -92,6 +94,7 @@ func kemonoToGetKemonoResponse(kemono *repository.Kemono) GetKemonoResponse {
 		Parent2ID:     *kemono.Parent2ID,
 		HasChild:      *kemono.HasChild,
 		ChildID:       *kemono.ChildID,
+		MaxHp:         *kemono.MaxHp,
 		Hp:            *kemono.Hp,
 		Attack:        *kemono.Attack,
 		Defense:       *kemono.Defense,
@@ -178,6 +181,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		Parent2ID:     uuid.Nil,
 		HasChild:      false,
 		ChildID:       uuid.Nil,
+		MaxHp:         100,
 		Hp:            100,
 		Attack:        10,
 		Defense:       10,
@@ -208,9 +212,10 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		Parent2ID:     uuid.Nil,
 		HasChild:      false,
 		ChildID:       uuid.Nil,
+		MaxHp:         20,
 		Hp:            20,
 		Attack:        5,
-		Defense:       2,
+		Defense:       3,
 	}
 	createdKemonoUUID, err = h.repo.CreateKemono(c.Request().Context(), kemonoParams.ToKemono())
 	if err != nil {
@@ -238,6 +243,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		Parent2ID:     uuid.Nil,
 		HasChild:      false,
 		ChildID:       uuid.Nil,
+		MaxHp:         30,
 		Hp:            30,
 		Attack:        7,
 		Defense:       4,
