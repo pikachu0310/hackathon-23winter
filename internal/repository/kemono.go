@@ -95,7 +95,9 @@ func addFieldsForKemono(queryBase *string, values *string, args *[]interface{}, 
 }
 
 func (r *Repository) CreateKemono(ctx context.Context, kemono *Kemono) (uuid.UUID, error) {
-	kemono.ID = uuid.New() // IDを設定
+	if kemono.ID == uuid.Nil {
+		kemono.ID = uuid.New() // IDを設定
+	}
 	query := "INSERT INTO kemono (id"
 	values := "(?"
 	args := []interface{}{kemono.ID}
@@ -128,8 +130,8 @@ func (r *Repository) UpdateKemono(ctx context.Context, kemono *Kemono) error {
 	return nil
 }
 
-func (r *Repository) GetKemonos(ctx context.Context) ([]*Kemono, error) {
-	kemonos := []*Kemono{}
+func (r *Repository) GetKemonos(ctx context.Context) ([]Kemono, error) {
+	var kemonos []Kemono
 	if err := r.db.SelectContext(ctx, &kemonos, "SELECT * FROM kemono"); err != nil {
 		return nil, fmt.Errorf("select kemonos: %w", err)
 	}
@@ -138,17 +140,17 @@ func (r *Repository) GetKemonos(ctx context.Context) ([]*Kemono, error) {
 }
 
 func (r *Repository) GetKemono(ctx context.Context, kemonoID uuid.UUID) (*Kemono, error) {
-	kemono := &Kemono{}
-	if err := r.db.GetContext(ctx, kemono, "SELECT * FROM kemono WHERE id = ?", kemonoID); err != nil {
+	var kemono Kemono
+	if err := r.db.GetContext(ctx, &kemono, "SELECT * FROM kemono WHERE id = ?", kemonoID); err != nil {
 		return nil, fmt.Errorf("select kemono: %w", err)
 	}
 
-	return kemono, nil
+	return &kemono, nil
 }
 
-func (r *Repository) GetKemonosByField(ctx context.Context, field int) ([]*Kemono, error) {
-	kemono := []*Kemono{}
-	if err := r.db.GetContext(ctx, kemono, "SELECT * FROM kemono WHERE field = ?", field); err != nil {
+func (r *Repository) GetKemonosByField(ctx context.Context, field int) ([]Kemono, error) {
+	var kemono []Kemono
+	if err := r.db.SelectContext(ctx, &kemono, "SELECT * FROM kemono WHERE field = ?", field); err != nil {
 		return nil, fmt.Errorf("select kemono: %w", err)
 	}
 

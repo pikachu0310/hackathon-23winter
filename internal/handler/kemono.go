@@ -103,12 +103,12 @@ func kemonoToGetKemonoResponse(kemono *repository.Kemono) GetKemonoResponse {
 func (h *Handler) GetKemonos(c echo.Context) error {
 	kemonos, err := h.repo.GetKemonos(c.Request().Context())
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
 	res := make(GetKemonosResponse, len(kemonos))
 	for i, kemono := range kemonos {
-		res[i] = kemonoToGetKemonoResponse(kemono)
+		res[i] = kemonoToGetKemonoResponse(&kemono)
 	}
 
 	return c.JSON(http.StatusOK, res)
@@ -123,7 +123,7 @@ func (h *Handler) GetKemono(c echo.Context) error {
 
 	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
 	res := kemonoToGetKemonoResponse(kemono)
@@ -140,12 +140,12 @@ func (h *Handler) GetKemonosByField(c echo.Context) error {
 
 	kemonos, err := h.repo.GetKemonosByField(c.Request().Context(), fieldID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
 	res := make(GetKemonosResponse, len(kemonos))
 	for i, kemono := range kemonos {
-		res[i] = kemonoToGetKemonoResponse(kemono)
+		res[i] = kemonoToGetKemonoResponse(&kemono)
 	}
 
 	return c.JSON(http.StatusOK, res)
@@ -153,19 +153,19 @@ func (h *Handler) GetKemonosByField(c echo.Context) error {
 
 // POST /api/v1/kemonos
 func (h *Handler) CreateKemono(c echo.Context) error {
-	id0, _ := uuid.Parse("00000000-0000-0000-0000-000000000000")
 	id1, _ := uuid.Parse("00000000-0000-0000-0000-000000000001")
 	id2, _ := uuid.Parse("00000000-0000-0000-0000-000000000002")
+	id3, _ := uuid.Parse("00000000-0000-0000-0000-000000000003")
 
 	kemono := &repository.Kemono{
-		ID:            id0,
+		ID:            id1,
 		Image:         images.TestKemonoImage,
 		Prompt:        "player",
 		Name:          "player",
 		Description:   "player",
 		CharacterChip: 0,
 		IsPlayer:      true,
-		PlayerID:      id0,
+		PlayerID:      id1,
 		IsOwned:       false,
 		OwnerID:       uuid.Nil,
 		IsInField:     true,
@@ -188,16 +188,16 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 	}
 
 	kemono = &repository.Kemono{
-		ID:            id1,
+		ID:            id2,
 		Image:         images.TestKemonoImage,
 		Prompt:        "test1",
 		Name:          "test1",
 		Description:   "test1",
-		CharacterChip: 0,
+		CharacterChip: 1,
 		IsPlayer:      false,
 		PlayerID:      uuid.Nil,
 		IsOwned:       false,
-		OwnerID:       id0,
+		OwnerID:       uuid.Nil,
 		IsInField:     true,
 		IsBoss:        false,
 		Field:         1,
@@ -218,16 +218,16 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 	}
 
 	kemono = &repository.Kemono{
-		ID:            id2,
+		ID:            id3,
 		Image:         images.TestKemonoImage,
 		Prompt:        "test2",
 		Name:          "test2",
 		Description:   "test2",
-		CharacterChip: 0,
+		CharacterChip: 2,
 		IsPlayer:      false,
 		PlayerID:      uuid.Nil,
 		IsOwned:       false,
-		OwnerID:       id0,
+		OwnerID:       uuid.Nil,
 		IsInField:     true,
 		IsBoss:        false,
 		Field:         1,
