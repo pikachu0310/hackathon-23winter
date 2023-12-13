@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	apiServerURL = "https://api.tringpt.com/api"
+	novelistServerURL = "https://api.tringpt.com/api"
 )
 
 var (
-	model = "supertrin_highpres"
+	novelistModel = "supertrin_highpres"
 )
 
 // RequestBody defines the structure of the API request body.
@@ -37,7 +37,7 @@ type RequestBody struct {
 	LogitBias       *string  `json:"logit_bias,omitempty"`        // トークンの出現率調整（区切り文字: <<|>>）
 	LogitBiasValues *string  `json:"logit_bias_values,omitempty"` // logit spaceにおける確率（区切り文字: |）
 	StopTokens      *string  `json:"stoptokens,omitempty"`        // 出力打ち切りシーケンス（区切り文字: <<|>>）
-	Model           *string  `json:"model,omitempty"`             // 使用するモデル（例: supertrin_highpres）
+	Model           *string  `json:"novelistModel,omitempty"`     // 使用するモデル（例: supertrin_highpres）
 }
 
 // ResponseData defines the structure for the API response data.
@@ -57,6 +57,7 @@ func NewRequestBody(text string) *RequestBody {
 		Temperature: 0.5,
 		TopP:        0.7,
 		RepPen:      2.0,
+		Model:       &novelistModel,
 	}
 }
 
@@ -69,7 +70,7 @@ func GenerateText(reqBody *RequestBody) (*string, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", apiServerURL, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", novelistServerURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, err
 	}
