@@ -39,7 +39,7 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		kemonoAPI.GET("/:kemonoID", h.GetKemono)
 		kemonoAPI.POST("/:kemonoID/catch", h.CatchKemono)
 		kemonoAPI.GET("/fields/:fieldID", h.GetKemonosByField)
-		kemonoAPI.GET("/reset", h.ResetKemonos)
+		kemonoAPI.POST("/reset", h.ResetKemonos)
 	}
 
 	// battle API
@@ -49,7 +49,7 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		battleAPI.POST("", h.PostBattle)
 		battleAPI.GET("/:battle_id", h.GetBattle)
 		battleAPI.POST("/:battle_id", h.PostBattleDamage)
-		battleAPI.GET("/reset", h.ResetBattles)
+		battleAPI.POST("/reset", h.ResetBattles)
 	}
 
 	// test API
