@@ -264,3 +264,41 @@ func (h *Handler) ResetKemonos(c echo.Context) error {
 
 	return c.NoContent(http.StatusOK)
 }
+
+// POST /api/v1/kemonos/:kemonoID/catch
+func (h *Handler) CatchKemono(c echo.Context) error {
+	kemonoID, err := uuid.Parse(c.Param("kemonoID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid kemonoID").SetInternal(err)
+	}
+
+	playerId, err := uuid.Parse(c.FormValue("player_id"))
+	if err != nil || playerId == uuid.Nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid player_id").SetInternal(err)
+	}
+
+	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	if *kemono.IsOwned {
+		return echo.NewHTTPError(http.StatusConflict, "kemono is already owned")
+	}
+	if *kemono.IsPlayer {
+		return echo.NewHTTPError(http.StatusConflict, "kemono is player")
+	}
+
+	t := true
+	f := false
+
+	kemono.IsOwned = &t
+	kemono.OwnerID = &playerId
+	kemono.IsInField = &f
+
+	if err = h.repo.UpdateKemono(c.Request().Context(), kemono); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
