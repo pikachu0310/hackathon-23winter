@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: OpenAI API
-  description: The OpenAI REST API. Please see https://platform.openai.com/docs/api-reference for more details.
+  description: The OpenAI REST API. Please see https://platform.openai_api.com/docs/api-reference for more details.
   version: "2.0.0"
   termsOfService: https://openai.com/policies/terms-of-use
   contact:
@@ -6064,7 +6064,7 @@ components:
       type: object
       properties:
         messages:
-          description: A list of messages comprising the conversation so far. [Example Python code](https://cookbook.openai.com/examples/how_to_format_inputs_to_chatgpt_models).
+          description: A list of messages comprising the conversation so far. [Example Python code](https://cookbook.openai_api.com/examples/how_to_format_inputs_to_chatgpt_models).
           type: array
           minItems: 1
           items:
