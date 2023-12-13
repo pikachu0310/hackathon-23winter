@@ -52,3 +52,7 @@ func MySQL() *mysql.Config {
 
 	return c
 }
+
+func GetNovelistAPIKey() string {
+	return getEnv("NOVELIST_APIKEY", "")
+}

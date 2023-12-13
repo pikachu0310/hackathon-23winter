@@ -41,6 +41,16 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		kemonoAPI.GET("/reset", h.ResetKemonos)
 	}
 
+	// battle API
+	battleAPI := api.Group("/battles")
+	{
+		battleAPI.GET("", h.GetBattles)
+		battleAPI.POST("", h.PostBattle)
+		battleAPI.GET("/:battle_id", h.GetBattle)
+		battleAPI.POST("/:battle_id", h.PostBattleDamage)
+		battleAPI.GET("/reset", h.ResetBattles)
+	}
+
 	// test API
 	testAPI := api.Group("/test")
 	{
