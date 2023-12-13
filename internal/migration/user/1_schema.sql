@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS users (
-	id VARCHAR(36) NOT NULL,
+	id CHAR(36) NOT NULL,
 	name VARCHAR(255) NOT NULL,
 	PRIMARY KEY (id)
 );

@@ -1,14 +1,13 @@
 package main
 
 import (
+	"github.com/jmoiron/sqlx"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/pikachu0310/hackathon-23winter/internal/handler"
 	"github.com/pikachu0310/hackathon-23winter/internal/migration"
 	"github.com/pikachu0310/hackathon-23winter/internal/pkg/config"
 	"github.com/pikachu0310/hackathon-23winter/internal/repository"
-
-	"github.com/jmoiron/sqlx"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
