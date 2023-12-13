@@ -26,6 +26,10 @@ func MigrateTables(db *sql.DB) error {
 		return fmt.Errorf("up migration: %w", err)
 	}
 
+	if err := goose.Up(db, "battle"); err != nil {
+		return fmt.Errorf("up migration: %w", err)
+	}
+
 	return nil
 }
 
@@ -41,6 +45,24 @@ func ResetKemonoTable(db *sql.DB) error {
 	}
 
 	if err := goose.Up(db, "kemono"); err != nil {
+		return fmt.Errorf("up migration: %w", err)
+	}
+
+	return nil
+}
+
+func ResetBattleTable(db *sql.DB) error {
+	goose.SetBaseFS(embedMigrations)
+
+	if err := goose.SetDialect("mysql"); err != nil {
+		return fmt.Errorf("set dialect: %w", err)
+	}
+
+	if err := goose.Down(db, "battle"); err != nil {
+		return fmt.Errorf("down migration: %w", err)
+	}
+
+	if err := goose.Up(db, "battle"); err != nil {
 		return fmt.Errorf("up migration: %w", err)
 	}
 
