@@ -4,5 +4,8 @@ import (
 	_ "embed"
 )
 
-//go:embed kemono.png
-var TestKemonoImage []byte
+//go:embed aqua.png
+var TestKemonoImageAqua []byte
+
+//go:embed fire.png
+var TestKemonoImageFire []byte

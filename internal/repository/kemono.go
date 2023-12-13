@@ -219,7 +219,7 @@ func (r *Repository) GetKemonosByField(ctx context.Context, field int) ([]Kemono
 	return kemono, nil
 }
 
-func (r *Repository) ResetKemonos(ctx context.Context) error {
+func (r *Repository) ResetKemonos() error {
 	err := migration.ResetKemonoTable(r.db.DB)
 	if err != nil {
 		return err
