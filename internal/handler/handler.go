@@ -56,5 +56,6 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 	testAPI := api.Group("/test")
 	{
 		testAPI.GET("", h.Test)
+		testAPI.GET("/2", h.Test2)
 	}
 }
