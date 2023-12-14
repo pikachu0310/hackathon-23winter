@@ -127,7 +127,7 @@ func (messageContents *MessageContents) AddImage(imageBase64 string) error {
 	messageContentPartImage.ImageUrl = struct {
 		Detail *openai_api.ChatCompletionRequestMessageContentPartImageImageUrlDetail `json:"detail,omitempty"`
 		Url    string                                                                 `json:"url"`
-	}{Url: imageBase64}
+	}{Url: fmt.Sprintf("data:image/png;base64,%s", imageBase64)}
 	messageContentPartImage.Type = openai_api.ImageUrl
 
 	err := messageContentPart.FromChatCompletionRequestMessageContentPartImage(messageContentPartImage)
@@ -196,4 +196,8 @@ func GenerateTextByGPT4(messages ChatMessages) (*string, error) {
 	latestResponseMessage := responseMessages.Choices[len(responseMessages.Choices)-1]
 
 	return latestResponseMessage.Message.Content, nil
+}
+
+func ImageToBase64(image []byte) string {
+	return base64.StdEncoding.EncodeToString(image)
 }

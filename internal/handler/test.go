@@ -8,6 +8,7 @@ import (
 	"github.com/pikachu0310/hackathon-23winter/internal/repository/api"
 	"github.com/pikachu0310/hackathon-23winter/src/images"
 	"net/http"
+	"strings"
 )
 
 type TestResponse struct {
@@ -201,3 +202,70 @@ func (h *Handler) Test4(c echo.Context) error {
 	return c.String(http.StatusOK, *imagePrompt)
 }
 
+func GenerateDescriptionPrompt(concepts repository.Concepts, imageBase64 string) (messages api.ChatMessages, err error) {
+	/*
+		提供した画像を読み込んで、画像に書かれているキャラクターの性質や性格や、特徴やできることを推測して、400文字程度で出力してください。
+
+		画像に書かれているのは、僕が考えたゲームのキャラクターです。このキャラクターは、かわいいマスコットやケモノやマモノたちが生息する世界観のゲームのキャラクターです。あなたには、この世界で生息しているこの画像のキャラクターがどういった生き物なのかを、推測し、考えて、ゲーム内で使用する説明文として出力して欲しいです。
+
+		参考までに、このケモノは以下の特性を持っています。
+		- 炎属性
+
+		提供した画像を読み込んで、画像に書かれているキャラクターの性質や性格や、特徴やできることを推測して、400文字程度で出力してください。
+	*/
+	var contents api.MessageContents
+	err = contents.AddImage(imageBase64)
+	if err != nil {
+		return
+	}
+
+	var promptTexts []string
+	promptTexts = append(promptTexts, "提供した画像を読み込んで、画像に書かれているキャラクターの性質や性格や、特徴やできることを推測して、400文字程度で出力してください。\n\n画像に書かれているのは、僕が考えたゲームのキャラクターです。このキャラクターは、かわいいマスコットやケモノやマモノたちが生息する世界観のゲームのキャラクターです。あなたには、この世界で生息しているこの画像のキャラクターがどういった生き物なのかを、推測し、考えて、ゲーム内で使用する説明文として出力して欲しいです。\n\n参考までに、このケモノは以下の特性を持っています。")
+	for _, concept := range concepts {
+		promptTexts = append(promptTexts, fmt.Sprintf("- %s", concept))
+	}
+	promptTexts = append(promptTexts, "\n提供した画像を読み込んで、画像に書かれているキャラクターの性質や性格や、特徴やできることを推測して、400文字程度で出力してください。")
+	promptText := strings.Join(promptTexts, "\n")
+	err = contents.AddText(promptText)
+	if err != nil {
+		return
+	}
+	err = messages.AddUserMessageContent(contents)
+	if err != nil {
+		return
+	}
+
+	return messages, nil
+}
+
+// GET /api/v1/test/5 画像から説明の作成
+func (h *Handler) Test5(c echo.Context) error {
+	kemonoID, err := uuid.Parse("00000000-0000-0000-0000-000000000001")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid kemonoID").SetInternal(err)
+	}
+
+	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	prompt, err := GenerateDescriptionPrompt(kemono.Concepts.Concepts(), api.ImageToBase64(kemono.Image))
+	if err != nil {
+		return err
+	}
+
+	kemonoDescription, err := api.GenerateTextByGPT4(prompt)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	kemono.Description = kemonoDescription
+
+	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	return c.String(http.StatusOK, *kemonoDescription)
+}
