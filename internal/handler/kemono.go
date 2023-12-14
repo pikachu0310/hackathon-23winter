@@ -48,7 +48,7 @@ type (
 		ID            uuid.UUID `json:"id"`
 		Image         []byte    `json:"image"`
 		Prompt        string    `json:"prompt"`
-		Concepts      string    `json:"concepts"`
+		Concepts      []string  `json:"concepts"`
 		Name          string    `json:"name"`
 		Description   string    `json:"description"`
 		CharacterChip int       `json:"character_chip"`
@@ -79,6 +79,7 @@ func kemonoToGetKemonoResponse(kemono *repository.Kemono) GetKemonoResponse {
 		ID:            *kemono.ID,
 		Image:         kemono.Image,
 		Prompt:        *kemono.Prompt,
+		Concepts:      kemono.Concepts.Concepts(),
 		Name:          *kemono.Name,
 		Description:   *kemono.Description,
 		CharacterChip: *kemono.CharacterChip,
