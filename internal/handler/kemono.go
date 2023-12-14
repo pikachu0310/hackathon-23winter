@@ -137,7 +137,7 @@ func (h *Handler) GetKemono(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-// GET /api/v1/kemonos/fields/:fieldID
+// GET /api/v1/fields/:fieldID/kemonos
 func (h *Handler) GetKemonosByField(c echo.Context) error {
 	fieldID, err := strconv.Atoi(c.Param("fieldID"))
 	if err != nil {
@@ -157,7 +157,7 @@ func (h *Handler) GetKemonosByField(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-// GET /api/v1/kemonos/players/:playerID
+// GET /api/v1/users/:userID/kemonos
 func (h *Handler) GetKemonoByOwnerId(c echo.Context) error {
 	playerID, err := uuid.Parse(c.Param("playerID"))
 	if err != nil {
@@ -315,7 +315,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 	return c.JSON(http.StatusOK, createdKemonoUUID)
 }
 
-// GET /api/v1/kemonos/reset
+// GET /api/v1/reset/kemonos
 func (h *Handler) ResetKemonos(c echo.Context) error {
 	if err := h.repo.ResetKemonos(); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)

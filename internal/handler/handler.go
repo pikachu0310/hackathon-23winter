@@ -39,9 +39,15 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		kemonoAPI.POST("", h.CreateKemono)
 		kemonoAPI.GET("/:kemonoID", h.GetKemono)
 		kemonoAPI.POST("/:kemonoID/catch", h.CatchKemono)
-		kemonoAPI.GET("/fields/:fieldID", h.GetKemonosByField)
 		kemonoAPI.GET("/players/:playerID", h.GetKemonoByOwnerId)
-		kemonoAPI.POST("/reset", h.ResetKemonos)
+	}
+
+	// field API
+	fieldAPI := api.Group("/fields")
+	{
+		fieldAPI.GET("/:fieldID/kemonos", h.GetKemonosByField)
+	}
+
 	// concept API
 	conceptAPI := api.Group("/concepts")
 	{
@@ -57,7 +63,6 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		battleAPI.POST("", h.PostBattle)
 		battleAPI.GET("/:battle_id", h.GetBattle)
 		battleAPI.POST("/:battle_id", h.PostBattleDamage)
-		battleAPI.POST("/reset", h.ResetBattles)
 	}
 
 	// test API
@@ -68,5 +73,14 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		testAPI.GET("/3", h.Test3)
 		testAPI.GET("/4", h.Test4)
 		testAPI.GET("/5", h.Test5)
+	}
+
+	// reset API
+	resetAPI := api.Group("/reset")
+	{
+		resetAPI.POST("/users", h.ResetUsers)
+		resetAPI.POST("/kemonos", h.ResetKemonos)
+		resetAPI.POST("/battles", h.ResetBattles)
+		resetAPI.POST("/concepts", h.ResetConcepts)
 	}
 }

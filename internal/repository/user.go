@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"github.com/pikachu0310/hackathon-23winter/internal/migration"
 
 	"github.com/google/uuid"
 )
@@ -53,6 +54,24 @@ func (r *Repository) GetUser(ctx context.Context, userID uuid.UUID) (*User, erro
 func (r *Repository) CreateUserByUserID(ctx context.Context, params CreateUserByIDParams) error {
 	if _, err := r.db.ExecContext(ctx, "INSERT INTO users (id, name) VALUES (?, ?)", params.ID, "test"); err != nil {
 		return fmt.Errorf("insert user: %w", err)
+	}
+
+	return nil
+}
+
+func (r *Repository) ResetUsers() error {
+	err := migration.ResetUserTable(r.db.DB)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) ResetUsers() error {
+	err := migration.ResetUserTable(r.db.DB)
+	if err != nil {
+		return err
 	}
 
 	return nil

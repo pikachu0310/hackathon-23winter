@@ -284,7 +284,7 @@ func GenerateBattlePrompt(attacker repository.Kemono, defender repository.Kemono
 	return strings.Join(prompt, "\n")
 }
 
-// GET /api/v1/battles/reset
+// GET /api/v1/reset/battles
 func (h *Handler) ResetBattles(c echo.Context) error {
 	err := h.repo.ResetBattles()
 	if err != nil {

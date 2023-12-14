@@ -111,3 +111,13 @@ func (h *Handler) CreateUserByUserID(c echo.Context) error {
 
 	return c.NoContent(http.StatusOK)
 }
+
+// POST /api/v1/reset/users
+func (h *Handler) ResetUsers(c echo.Context) error {
+	err := h.repo.ResetUsers()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
