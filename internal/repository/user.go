@@ -67,12 +67,3 @@ func (r *Repository) ResetUsers() error {
 
 	return nil
 }
-
-func (r *Repository) ResetUsers() error {
-	err := migration.ResetUserTable(r.db.DB)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}

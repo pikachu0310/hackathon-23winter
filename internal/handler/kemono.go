@@ -361,3 +361,25 @@ func (h *Handler) CatchKemono(c echo.Context) error {
 
 	return c.NoContent(http.StatusOK)
 }
+
+// POST /api/v1/kemonos/:kemonoID/extract
+func (h *Handler) ExtractKemono(c echo.Context) error {
+	kemonoID, err := uuid.Parse(c.Param("kemonoID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid kemonoID").SetInternal(err)
+	}
+
+	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	for _, concept := range kemono.Concepts.Concepts() {
+		_, err = h.repo.CreateConcept(c.Request().Context(), *kemono.PlayerID, concept)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+		}
+	}
+
+	return c.NoContent(http.StatusOK)
+}
