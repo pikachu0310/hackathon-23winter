@@ -156,6 +156,23 @@ func (h *Handler) GetKemonosByField(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
+// GET /api/v1/kemonos/players/:playerID
+func (h *Handler) GetKemonoByOwnerId(c echo.Context) error {
+	playerID, err := uuid.Parse(c.Param("playerID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid playerID").SetInternal(err)
+	}
+
+	kemono, err := h.repo.GetKemonoByOwnerId(c.Request().Context(), playerID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	res := kemonoToGetKemonoResponse(kemono)
+
+	return c.JSON(http.StatusOK, res)
+}
+
 // POST /api/v1/kemonos
 func (h *Handler) CreateKemono(c echo.Context) error {
 	id1, _ := uuid.Parse("00000000-0000-0000-0000-000000000001")
