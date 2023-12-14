@@ -375,7 +375,7 @@ func (h *Handler) ExtractKemono(c echo.Context) error {
 	}
 
 	for _, concept := range kemono.Concepts.Concepts() {
-		_, err = h.repo.CreateConcept(c.Request().Context(), *kemono.PlayerID, concept)
+		_, err = h.repo.CreateConcept(*kemono.PlayerID, concept)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 		}
