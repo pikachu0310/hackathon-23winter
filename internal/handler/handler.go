@@ -42,6 +42,12 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		kemonoAPI.GET("/fields/:fieldID", h.GetKemonosByField)
 		kemonoAPI.GET("/players/:playerID", h.GetKemonoByOwnerId)
 		kemonoAPI.POST("/reset", h.ResetKemonos)
+	// concept API
+	conceptAPI := api.Group("/concepts")
+	{
+		conceptAPI.GET("", h.GetConcepts)
+		conceptAPI.GET("/:conceptID", h.GetConcept)
+		conceptAPI.DELETE("/:conceptID", h.DeleteConcept)
 	}
 
 	// battle API
