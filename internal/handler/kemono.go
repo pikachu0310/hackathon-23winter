@@ -178,6 +178,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 	id1, _ := uuid.Parse("00000000-0000-0000-0000-000000000001")
 	id2, _ := uuid.Parse("00000000-0000-0000-0000-000000000002")
 	id3, _ := uuid.Parse("00000000-0000-0000-0000-000000000003")
+	id4, _ := uuid.Parse("00000000-0000-0000-0000-000000000004")
 
 	kemonoParams := &repository.KemonoParams{
 		ID:            id1,
@@ -189,9 +190,9 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		CharacterChip: 1,
 		IsPlayer:      true,
 		PlayerID:      id1,
-		IsOwned:       false,
-		OwnerID:       uuid.Nil,
-		IsInField:     true,
+		IsOwned:       true,
+		OwnerID:       id1,
+		IsInField:     false,
 		IsBoss:        false,
 		Field:         1,
 		X:             10,
@@ -221,9 +222,9 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		CharacterChip: 2,
 		IsPlayer:      false,
 		PlayerID:      uuid.Nil,
-		IsOwned:       false,
-		OwnerID:       uuid.Nil,
-		IsInField:     true,
+		IsOwned:       true,
+		OwnerID:       id1,
+		IsInField:     false,
 		IsBoss:        false,
 		Field:         1,
 		X:             10,
@@ -258,7 +259,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		IsInField:     true,
 		IsBoss:        false,
 		Field:         1,
-		X:             10,
+		X:             13,
 		Y:             10,
 		HasParent:     false,
 		Parent1ID:     uuid.Nil,
@@ -269,6 +270,38 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		Hp:            30,
 		Attack:        7,
 		Defense:       4,
+	}
+	createdKemonoUUID, err = h.repo.CreateKemono(c.Request().Context(), kemonoParams.ToKemono())
+	if err != nil {
+		return err
+	}
+
+	kemonoParams = &repository.KemonoParams{
+		ID:            id4,
+		Image:         images.TestKemonoImageAqua,
+		Prompt:        "Create a single, cute, four-legged kemomimi (animal-eared) character for a game. This character should have the appearance of waking up in a forest, similar to a Pokemon style. The design should be vividly colored and embody the water element, ensuring it fits as a potential enemy in the game without feeling out of place. The character should be immediately usable in a game, designed without any specific color palettes or markers used for design purposes.",
+		Concepts:      "とてもかわいい,マスコット,四足歩行,目が覚めたら森の中だった,ポケモンのようなイメージ,色は鮮やかめ,水属性",
+		Name:          "アクアフローラ",
+		Description:   "このキャラクターは、やさしい目とふわふわの尾を持つ水属性の森の精霊です。生まれながらにして森を潤し、清らかな水を操る能力を持つ。その鮮やかな色合いは森の生命力を象徴し、可愛らしい外見にもかかわらず、敵には強力な水の魔法で立ち向かう勇敢さを秘めている。",
+		CharacterChip: 1,
+		IsPlayer:      false,
+		PlayerID:      uuid.Nil,
+		IsOwned:       false,
+		OwnerID:       uuid.Nil,
+		IsInField:     true,
+		IsBoss:        false,
+		Field:         1,
+		X:             16,
+		Y:             10,
+		HasParent:     false,
+		Parent1ID:     uuid.Nil,
+		Parent2ID:     uuid.Nil,
+		HasChild:      false,
+		ChildID:       uuid.Nil,
+		MaxHp:         100,
+		Hp:            100,
+		Attack:        10,
+		Defense:       10,
 	}
 	createdKemonoUUID, err = h.repo.CreateKemono(c.Request().Context(), kemonoParams.ToKemono())
 	if err != nil {
