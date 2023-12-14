@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS kemono (
     id CHAR(36) NOT NULL,
     image MEDIUMBLOB NOT NULL,
     prompt TEXT DEFAULT '',
+    concepts TEXT DEFAULT '',
     name TEXT DEFAULT '',
     description TEXT DEFAULT '',
     character_chip INT DEFAULT -1,

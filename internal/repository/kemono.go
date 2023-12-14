@@ -12,26 +12,27 @@ import (
 type (
 	/*
 		CREATE TABLE IF NOT EXISTS kemono (
-		    id VARCHAR(36) NOT NULL,
+		    id CHAR(36) NOT NULL,
 		    image MEDIUMBLOB NOT NULL,
-		    prompt VARCHAR(255) DEFAULT "",
-		    name VARCHAR(255) DEFAULT "",
-		    description VARCHAR(255) DEFAULT "",
+		    prompt TEXT DEFAULT '',
+		    concepts TEXT DEFAULT '',
+		    name TEXT DEFAULT '',
+		    description TEXT DEFAULT '',
 		    character_chip INT DEFAULT -1,
 		    is_player BOOLEAN NOT NULL DEFAULT FALSE DEFAULT FALSE,
-		    player_id VARCHAR(36) DEFAULT "",
+		    player_id CHAR(36) DEFAULT '',
 		    is_owned BOOLEAN NOT NULL DEFAULT FALSE DEFAULT FALSE,
-		    owner_id VARCHAR(36) DEFAULT "",
+		    owner_id CHAR(36) DEFAULT '',
 		    is_in_field BOOLEAN NOT NULL DEFAULT TRUE DEFAULT TRUE,
 		    is_boss BOOLEAN NOT NULL DEFAULT FALSE,
 		    field INT DEFAULT -1,
 		    x INT DEFAULT -1,
 		    y INT DEFAULT -1,
 		    has_parent BOOLEAN NOT NULL DEFAULT FALSE,
-		    parent1_id VARCHAR(36) DEFAULT "",
-		    parent2_id VARCHAR(36) DEFAULT "",
+		    parent1_id CHAR(36) DEFAULT '',
+		    parent2_id CHAR(36) DEFAULT '',
 		    has_child BOOLEAN NOT NULL DEFAULT FALSE,
-		    child_id VARCHAR(36) DEFAULT "",
+		    child_id CHAR(36) DEFAULT '',
 		    max_hp INT DEFAULT -1,
 		    hp INT DEFAULT -1,
 		    attack INT DEFAULT -1,
@@ -41,38 +42,43 @@ type (
 		);
 	*/
 
+	ConceptsText string
+	Concepts     []string
+
 	Kemono struct {
-		ID            *uuid.UUID `db:"id"`
-		Image         []byte     `db:"image"`
-		Prompt        *string    `db:"prompt"`
-		Name          *string    `db:"name"`
-		Description   *string    `db:"description"`
-		CharacterChip *int       `db:"character_chip"`
-		IsPlayer      *bool      `db:"is_player"`
-		PlayerID      *uuid.UUID `db:"player_id"`
-		IsOwned       *bool      `db:"is_owned"`
-		OwnerID       *uuid.UUID `db:"owner_id"`
-		IsInField     *bool      `db:"is_in_field"`
-		IsBoss        *bool      `db:"is_boss"`
-		Field         *int       `db:"field"`
-		X             *int       `db:"x"`
-		Y             *int       `db:"y"`
-		HasParent     *bool      `db:"has_parent"`
-		Parent1ID     *uuid.UUID `db:"parent1_id"`
-		Parent2ID     *uuid.UUID `db:"parent2_id"`
-		HasChild      *bool      `db:"has_child"`
-		ChildID       *uuid.UUID `db:"child_id"`
-		MaxHp         *int       `db:"max_hp"`
-		Hp            *int       `db:"hp"`
-		Attack        *int       `db:"attack"`
-		Defense       *int       `db:"defense"`
-		CreatedAt     *string    `db:"created_at"`
+		ID            *uuid.UUID    `db:"id"`
+		Image         []byte        `db:"image"`
+		Prompt        *string       `db:"prompt"`
+		Concepts      *ConceptsText `db:"concepts"`
+		Name          *string       `db:"name"`
+		Description   *string       `db:"description"`
+		CharacterChip *int          `db:"character_chip"`
+		IsPlayer      *bool         `db:"is_player"`
+		PlayerID      *uuid.UUID    `db:"player_id"`
+		IsOwned       *bool         `db:"is_owned"`
+		OwnerID       *uuid.UUID    `db:"owner_id"`
+		IsInField     *bool         `db:"is_in_field"`
+		IsBoss        *bool         `db:"is_boss"`
+		Field         *int          `db:"field"`
+		X             *int          `db:"x"`
+		Y             *int          `db:"y"`
+		HasParent     *bool         `db:"has_parent"`
+		Parent1ID     *uuid.UUID    `db:"parent1_id"`
+		Parent2ID     *uuid.UUID    `db:"parent2_id"`
+		HasChild      *bool         `db:"has_child"`
+		ChildID       *uuid.UUID    `db:"child_id"`
+		MaxHp         *int          `db:"max_hp"`
+		Hp            *int          `db:"hp"`
+		Attack        *int          `db:"attack"`
+		Defense       *int          `db:"defense"`
+		CreatedAt     *string       `db:"created_at"`
 	}
 
 	KemonoParams struct {
 		ID            uuid.UUID
 		Image         []byte
 		Prompt        string
+		Concepts      ConceptsText
 		Name          string
 		Description   string
 		CharacterChip int
@@ -98,11 +104,26 @@ type (
 	}
 )
 
+func (c ConceptsText) Concepts() Concepts {
+	// "a,b,c" -> ["a", "b", "c"]
+	return strings.Split(c.String(), ",")
+}
+
+func (c ConceptsText) String() string {
+	return string(c)
+}
+
+func (c Concepts) String() string {
+	// ["a", "b", "c"] -> "a,b,c"
+	return strings.Join(c, ",")
+}
+
 func (kemonoParams *KemonoParams) ToKemono() *Kemono {
 	return &Kemono{
 		ID:            &kemonoParams.ID,
 		Image:         kemonoParams.Image,
 		Prompt:        &kemonoParams.Prompt,
+		Concepts:      &kemonoParams.Concepts,
 		Name:          &kemonoParams.Name,
 		Description:   &kemonoParams.Description,
 		CharacterChip: &kemonoParams.CharacterChip,

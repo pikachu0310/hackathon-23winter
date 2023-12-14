@@ -16,6 +16,7 @@ type (
 			ID            *uuid.UUID `db:"id"`
 			Image         []byte     `db:"image"`
 			Prompt        *string    `db:"prompt"`
+			Concepts      *string    `db:"concepts"`
 			Name          *string    `db:"name"`
 			Description   *string    `db:"description"`
 			CharacterChip *int       `db:"character_chip"`
@@ -47,6 +48,7 @@ type (
 		ID            uuid.UUID `json:"id"`
 		Image         []byte    `json:"image"`
 		Prompt        string    `json:"prompt"`
+		Concepts      string    `json:"concepts"`
 		Name          string    `json:"name"`
 		Description   string    `json:"description"`
 		CharacterChip int       `json:"character_chip"`
@@ -164,6 +166,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		ID:            id1,
 		Image:         images.TestKemonoImageAqua,
 		Prompt:        "Create a single, cute, four-legged kemomimi (animal-eared) character for a game. This character should have the appearance of waking up in a forest, similar to a Pokemon style. The design should be vividly colored and embody the water element, ensuring it fits as a potential enemy in the game without feeling out of place. The character should be immediately usable in a game, designed without any specific color palettes or markers used for design purposes.",
+		Concepts:      "とてもかわいい,マスコット,四足歩行,目が覚めたら森の中だった,ポケモンのようなイメージ,色は鮮やかめ,水属性",
 		Name:          "アクアフローラ",
 		Description:   "このキャラクターは、やさしい目とふわふわの尾を持つ水属性の森の精霊です。生まれながらにして森を潤し、清らかな水を操る能力を持つ。その鮮やかな色合いは森の生命力を象徴し、可愛らしい外見にもかかわらず、敵には強力な水の魔法で立ち向かう勇敢さを秘めている。",
 		CharacterChip: 1,
@@ -195,6 +198,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		ID:            id2,
 		Image:         images.TestKemonoImageFire,
 		Prompt:        "Create a single, cute, four-legged kemomimi (animal-eared) character for a game. This character should have the appearance of waking up in a forest, inspired by Pokemon-style creatures. The design should be brightly colored and embody the fire element, ensuring it fits as a potential enemy in the game without feeling out of place. The character should be immediately usable in a game, designed without any specific color palettes or markers used for design purposes.",
+		Concepts:      "とてもかわいい,マスコット,四足歩行,目が覚めたら森の中だった,ポケモンのようなイメージ,色は鮮やかめ,炎属性",
 		Name:          "ヒバナ",
 		Description:   "このキャラクターは、炎属性を持つ森の守り神であり、その生き生きとしたオレンジと赤の色合いが情熱と元気を象徴しています。ふわふわの耳と尾はその愛らしさを際立たせる一方で、目には決意と勇気が宿っており、戦いのときには強い炎を操る力を秘めています。このキャラクターは森を通り抜ける冒険者にとって、時には可愛らしいガイドとなり、時には炎の魔法で道を阻む挑戦者となります。その愛くるしい外見に騙されてはならず、彼の炎の力は敵を一瞬にして灰に変えるほど強力です。",
 		CharacterChip: 2,
@@ -226,6 +230,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		ID:            id3,
 		Image:         images.TestKemonoImageFire,
 		Prompt:        "Create a single, cute, four-legged kemomimi (animal-eared) character for a game. This character should have the appearance of waking up in a forest, inspired by Pokemon-style creatures. The design should be brightly colored and embody the fire element, ensuring it fits as a potential enemy in the game without feeling out of place. The character should be immediately usable in a game, designed without any specific color palettes or markers used for design purposes.",
+		Concepts:      "とてもかわいい,マスコット,四足歩行,目が覚めたら森の中だった,ポケモンのようなイメージ,色は鮮やかめ,炎属性",
 		Name:          "ヒバナ",
 		Description:   "このキャラクターは、炎属性を持つ森の守り神であり、その生き生きとしたオレンジと赤の色合いが情熱と元気を象徴しています。ふわふわの耳と尾はその愛らしさを際立たせる一方で、目には決意と勇気が宿っており、戦いのときには強い炎を操る力を秘めています。このキャラクターは森を通り抜ける冒険者にとって、時には可愛らしいガイドとなり、時には炎の魔法で道を阻む挑戦者となります。その愛くるしい外見に騙されてはならず、彼の炎の力は敵を一瞬にして灰に変えるほど強力です。",
 		CharacterChip: 3,
