@@ -156,6 +156,7 @@ func isZeroValue(x interface{}) bool {
 func addFieldsForKemono(queryBase *string, values *string, args *[]interface{}, kemono *Kemono) {
 	t := reflect.TypeOf(*kemono)
 	v := reflect.ValueOf(*kemono)
+	first := true
 
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
@@ -164,13 +165,19 @@ func addFieldsForKemono(queryBase *string, values *string, args *[]interface{}, 
 		if !isZeroValue(value) || (field.Name == "Image" && len(kemono.Image) > 0) {
 			dbTag := field.Tag.Get("db")
 			if dbTag != "" && dbTag != "id" && dbTag != "created_at" {
-				*queryBase += fmt.Sprintf(", %s", dbTag)
 				if values != nil {
+					*queryBase += fmt.Sprintf(", %s", dbTag)
 					*values += ", ?"
 				} else {
+					if first {
+						*queryBase += fmt.Sprintf("%s", dbTag)
+					} else {
+						*queryBase += fmt.Sprintf(", %s", dbTag)
+					}
 					*queryBase += " = ?"
 				}
 				*args = append(*args, value)
+				first = false
 			}
 		}
 	}
