@@ -94,3 +94,20 @@ func (h *Handler) GetUser(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, res)
 }
+
+// POST /api/v1/users/:userID
+func (h *Handler) CreateUserByUserID(c echo.Context) error {
+	userID, err := uuid.Parse(c.Param("userID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid userID").SetInternal(err)
+	}
+
+	err = h.repo.CreateUserByUserID(c.Request().Context(), repository.CreateUserByIDParams{
+		ID: userID,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	return c.NoContent(http.StatusOK)
+}

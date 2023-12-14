@@ -17,6 +17,10 @@ type (
 	CreateUserParams struct {
 		Name string
 	}
+
+	CreateUserByIDParams struct {
+		ID uuid.UUID
+	}
 )
 
 func (r *Repository) GetUsers(ctx context.Context) ([]*User, error) {
@@ -44,4 +48,12 @@ func (r *Repository) GetUser(ctx context.Context, userID uuid.UUID) (*User, erro
 	}
 
 	return user, nil
+}
+
+func (r *Repository) CreateUserByUserID(ctx context.Context, params CreateUserByIDParams) error {
+	if _, err := r.db.ExecContext(ctx, "INSERT INTO users (id, name) VALUES (?, ?)", params.ID, "test"); err != nil {
+		return fmt.Errorf("insert user: %w", err)
+	}
+
+	return nil
 }
