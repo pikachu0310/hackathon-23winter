@@ -177,3 +177,27 @@ func GenerateImagePrompt(concepts repository.Concepts) (api.ChatMessages, error)
 
 	return messages, nil
 }
+
+// GET /api/v1/test/4
+func (h *Handler) Test4(c echo.Context) error {
+	kemonoId, err := uuid.Parse("00000000-0000-0000-0000-000000000001")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid kemonoID").SetInternal(err)
+	}
+	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	prompt, err := GenerateImagePrompt(kemono.Concepts.Concepts())
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+	imagePrompt, err := api.GenerateTextByGPT4(prompt)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	return c.String(http.StatusOK, *imagePrompt)
+}
+
