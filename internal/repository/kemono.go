@@ -240,13 +240,13 @@ func (r *Repository) GetKemonosByField(ctx context.Context, field int) ([]Kemono
 	return kemono, nil
 }
 
-func (r *Repository) GetKemonoByOwnerId(ctx context.Context, playerID uuid.UUID) (*Kemono, error) {
-	var kemono Kemono
+func (r *Repository) GetKemonoByOwnerId(ctx context.Context, playerID uuid.UUID) ([]Kemono, error) {
+	var kemono []Kemono
 	if err := r.db.GetContext(ctx, &kemono, "SELECT * FROM kemono WHERE owner_id = ?", playerID); err != nil {
 		return nil, fmt.Errorf("select kemono: %w", err)
 	}
 
-	return &kemono, nil
+	return kemono, nil
 }
 
 func (r *Repository) ResetKemonos() error {

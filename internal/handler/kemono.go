@@ -163,12 +163,15 @@ func (h *Handler) GetKemonoByOwnerId(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid playerID").SetInternal(err)
 	}
 
-	kemono, err := h.repo.GetKemonoByOwnerId(c.Request().Context(), playerID)
+	kemonos, err := h.repo.GetKemonoByOwnerId(c.Request().Context(), playerID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
-	res := kemonoToGetKemonoResponse(kemono)
+	res := make(GetKemonosResponse, len(kemonos))
+	for i, kemono := range kemonos {
+		res[i] = kemonoToGetKemonoResponse(&kemono)
+	}
 
 	return c.JSON(http.StatusOK, res)
 }
