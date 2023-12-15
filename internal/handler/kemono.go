@@ -74,6 +74,36 @@ type (
 		Defense     int       `json:"defense"`
 		CreatedAt   string    `json:"created_at"`
 	}
+
+	GetKemonosResponseWithoutImage []GetKemonoResponseWithoutImage
+	GetKemonoResponseWithoutImage  struct {
+		ID          uuid.UUID `json:"id"`
+		Prompt      string    `json:"prompt"`
+		Concepts    []string  `json:"concepts"`
+		Name        string    `json:"name"`
+		Description string    `json:"description"`
+		Kind        int       `json:"kind"`
+		Color       int       `json:"color"`
+		IsPlayer    bool      `json:"is_player"`
+		IsForBattle bool      `json:"is_for_battle"`
+		IsOwned     bool      `json:"is_owned"`
+		OwnerID     uuid.UUID `json:"owner_id"`
+		IsInField   bool      `json:"is_in_field"`
+		IsBoss      bool      `json:"is_boss"`
+		Field       int       `json:"field"`
+		X           int       `json:"x"`
+		Y           int       `json:"y"`
+		HasParent   bool      `json:"has_parent"`
+		Parent1ID   uuid.UUID `json:"parent1_id"`
+		Parent2ID   uuid.UUID `json:"parent2_id"`
+		HasChild    bool      `json:"has_child"`
+		ChildID     uuid.UUID `json:"child_id"`
+		MaxHp       int       `json:"max_hp"`
+		Hp          int       `json:"hp"`
+		Attack      int       `json:"attack"`
+		Defense     int       `json:"defense"`
+		CreatedAt   string    `json:"created_at"`
+	}
 )
 
 func kemonoToGetKemonoResponse(kemono *domains.Kemono) GetKemonoResponse {
@@ -106,6 +136,45 @@ func kemonoToGetKemonoResponse(kemono *domains.Kemono) GetKemonoResponse {
 		Defense:     *kemono.Defense,
 		CreatedAt:   *kemono.CreatedAt,
 	}
+}
+
+func (kemono GetKemonoResponse) WithoutImage() GetKemonoResponseWithoutImage {
+	return GetKemonoResponseWithoutImage{
+		ID:          kemono.ID,
+		Prompt:      kemono.Prompt,
+		Concepts:    kemono.Concepts,
+		Name:        kemono.Name,
+		Description: kemono.Description,
+		Kind:        kemono.Kind,
+		Color:       kemono.Color,
+		IsPlayer:    kemono.IsPlayer,
+		IsForBattle: kemono.IsForBattle,
+		IsOwned:     kemono.IsOwned,
+		OwnerID:     kemono.OwnerID,
+		IsInField:   kemono.IsInField,
+		IsBoss:      kemono.IsBoss,
+		Field:       kemono.Field,
+		X:           kemono.X,
+		Y:           kemono.Y,
+		HasParent:   kemono.HasParent,
+		Parent1ID:   kemono.Parent1ID,
+		Parent2ID:   kemono.Parent2ID,
+		HasChild:    kemono.HasChild,
+		ChildID:     kemono.ChildID,
+		MaxHp:       kemono.MaxHp,
+		Hp:          kemono.Hp,
+		Attack:      kemono.Attack,
+		Defense:     kemono.Defense,
+		CreatedAt:   kemono.CreatedAt,
+	}
+}
+
+func (kemonos GetKemonosResponse) WithoutImage() GetKemonosResponseWithoutImage {
+	res := make(GetKemonosResponseWithoutImage, len(kemonos))
+	for i, kemono := range kemonos {
+		res[i] = kemono.WithoutImage()
+	}
+	return res
 }
 
 // GET /api/v1/kemonos
@@ -157,7 +226,7 @@ func (h *Handler) GetKemonosByField(c echo.Context) error {
 		res[i] = kemonoToGetKemonoResponse(&kemono)
 	}
 
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, res.WithoutImage())
 }
 
 // GET /api/v1/users/:userID/kemonos
