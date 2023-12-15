@@ -315,6 +315,134 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		return err
 	}
 
+	kemonoParams = &domains.KemonoParams{
+		ID:          uuid.New(),
+		Image:       images.TestKemonoImageAqua,
+		Prompt:      "Create a single, cute, four-legged kemomimi (animal-eared) character for a game. This character should have the appearance of waking up in a forest, similar to a Pokemon style. The design should be vividly colored and embody the water element, ensuring it fits as a potential enemy in the game without feeling out of place. The character should be immediately usable in a game, designed without any specific color palettes or markers used for design purposes.",
+		Concepts:    "とてもかわいい,マスコット,四足歩行,目が覚めたら森の中だった,ポケモンのようなイメージ,色は鮮やかめ,水属性",
+		Name:        "アクアフローラ",
+		Description: "このキャラクターは、やさしい目とふわふわの尾を持つ水属性の森の精霊です。生まれながらにして森を潤し、清らかな水を操る能力を持つ。その鮮やかな色合いは森の生命力を象徴し、可愛らしい外見にもかかわらず、敵には強力な水の魔法で立ち向かう勇敢さを秘めている。",
+		Kind:        1,
+		Color:       3,
+		IsPlayer:    false,
+		IsOwned:     false,
+		OwnerID:     uuid.Nil,
+		IsInField:   true,
+		IsBoss:      false,
+		Field:       1,
+		X:           19,
+		Y:           10,
+		HasParent:   false,
+		Parent1ID:   uuid.Nil,
+		Parent2ID:   uuid.Nil,
+		HasChild:    false,
+		ChildID:     uuid.Nil,
+		MaxHp:       100,
+		Hp:          100,
+		Attack:      10,
+		Defense:     10,
+	}
+	createdKemonoUUID, err = h.repo.CreateKemono(c.Request().Context(), kemonoParams.ToKemono())
+	if err != nil {
+		return err
+	}
+
+	kemonoParams = &domains.KemonoParams{
+		ID:          uuid.New(),
+		Image:       images.TestKemonoImageAqua,
+		Prompt:      "Create a single, cute, four-legged kemomimi (animal-eared) character for a game. This character should have the appearance of waking up in a forest, similar to a Pokemon style. The design should be vividly colored and embody the water element, ensuring it fits as a potential enemy in the game without feeling out of place. The character should be immediately usable in a game, designed without any specific color palettes or markers used for design purposes.",
+		Concepts:    "とてもかわいい,マスコット,四足歩行,目が覚めたら森の中だった,ポケモンのようなイメージ,色は鮮やかめ,水属性",
+		Name:        "アクアフローラ",
+		Description: "このキャラクターは、やさしい目とふわふわの尾を持つ水属性の森の精霊です。生まれながらにして森を潤し、清らかな水を操る能力を持つ。その鮮やかな色合いは森の生命力を象徴し、可愛らしい外見にもかかわらず、敵には強力な水の魔法で立ち向かう勇敢さを秘めている。",
+		Kind:        2,
+		Color:       7,
+		IsPlayer:    false,
+		IsOwned:     false,
+		OwnerID:     uuid.Nil,
+		IsInField:   true,
+		IsBoss:      false,
+		Field:       1,
+		X:           21,
+		Y:           10,
+		HasParent:   false,
+		Parent1ID:   uuid.Nil,
+		Parent2ID:   uuid.Nil,
+		HasChild:    false,
+		ChildID:     uuid.Nil,
+		MaxHp:       100,
+		Hp:          100,
+		Attack:      10,
+		Defense:     10,
+	}
+	createdKemonoUUID, err = h.repo.CreateKemono(c.Request().Context(), kemonoParams.ToKemono())
+	if err != nil {
+		return err
+	}
+
+	kemonoParams = &domains.KemonoParams{
+		ID:          uuid.New(),
+		Image:       images.TestKemonoImageAqua,
+		Prompt:      "Create a single, cute, four-legged kemomimi (animal-eared) character for a game. This character should have the appearance of waking up in a forest, similar to a Pokemon style. The design should be vividly colored and embody the water element, ensuring it fits as a potential enemy in the game without feeling out of place. The character should be immediately usable in a game, designed without any specific color palettes or markers used for design purposes.",
+		Concepts:    "とてもかわいい,マスコット,四足歩行,目が覚めたら森の中だった,ポケモンのようなイメージ,色は鮮やかめ,水属性",
+		Name:        "アクアフローラ",
+		Description: "このキャラクターは、やさしい目とふわふわの尾を持つ水属性の森の精霊です。生まれながらにして森を潤し、清らかな水を操る能力を持つ。その鮮やかな色合いは森の生命力を象徴し、可愛らしい外見にもかかわらず、敵には強力な水の魔法で立ち向かう勇敢さを秘めている。",
+		Kind:        3,
+		Color:       6,
+		IsPlayer:    false,
+		IsOwned:     false,
+		OwnerID:     uuid.Nil,
+		IsInField:   true,
+		IsBoss:      false,
+		Field:       1,
+		X:           13,
+		Y:           13,
+		HasParent:   false,
+		Parent1ID:   uuid.Nil,
+		Parent2ID:   uuid.Nil,
+		HasChild:    false,
+		ChildID:     uuid.Nil,
+		MaxHp:       100,
+		Hp:          100,
+		Attack:      10,
+		Defense:     10,
+	}
+	createdKemonoUUID, err = h.repo.CreateKemono(c.Request().Context(), kemonoParams.ToKemono())
+	if err != nil {
+		return err
+	}
+
+	kemonoParams = &domains.KemonoParams{
+		ID:          uuid.New(),
+		Image:       images.TestKemonoImageAqua,
+		Prompt:      "Create a single, cute, four-legged kemomimi (animal-eared) character for a game. This character should have the appearance of waking up in a forest, similar to a Pokemon style. The design should be vividly colored and embody the water element, ensuring it fits as a potential enemy in the game without feeling out of place. The character should be immediately usable in a game, designed without any specific color palettes or markers used for design purposes.",
+		Concepts:    "とてもかわいい,マスコット,四足歩行,目が覚めたら森の中だった,ポケモンのようなイメージ,色は鮮やかめ,水属性",
+		Name:        "アクアフローラ",
+		Description: "このキャラクターは、やさしい目とふわふわの尾を持つ水属性の森の精霊です。生まれながらにして森を潤し、清らかな水を操る能力を持つ。その鮮やかな色合いは森の生命力を象徴し、可愛らしい外見にもかかわらず、敵には強力な水の魔法で立ち向かう勇敢さを秘めている。",
+		Kind:        4,
+		Color:       9,
+		IsPlayer:    false,
+		IsOwned:     false,
+		OwnerID:     uuid.Nil,
+		IsInField:   true,
+		IsBoss:      false,
+		Field:       1,
+		X:           17,
+		Y:           14,
+		HasParent:   false,
+		Parent1ID:   uuid.Nil,
+		Parent2ID:   uuid.Nil,
+		HasChild:    false,
+		ChildID:     uuid.Nil,
+		MaxHp:       100,
+		Hp:          100,
+		Attack:      10,
+		Defense:     10,
+	}
+	createdKemonoUUID, err = h.repo.CreateKemono(c.Request().Context(), kemonoParams.ToKemono())
+	if err != nil {
+		return err
+	}
+
 	return c.JSON(http.StatusOK, createdKemonoUUID)
 }
 
