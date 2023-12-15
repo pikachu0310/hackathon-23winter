@@ -159,7 +159,7 @@ func (h *Handler) GetKemonosByField(c echo.Context) error {
 
 // GET /api/v1/users/:userID/kemonos
 func (h *Handler) GetKemonoByOwnerId(c echo.Context) error {
-	playerID, err := uuid.Parse(c.Param("playerID"))
+	playerID, err := uuid.Parse(c.Param("userID"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid playerID").SetInternal(err)
 	}

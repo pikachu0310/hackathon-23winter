@@ -48,7 +48,7 @@ func (h *Handler) DeleteConcept(c echo.Context) error {
 
 // GET /api/v1/users/:playerID/concepts
 func (h *Handler) GetConceptsByPlayerId(c echo.Context) error {
-	playerId, err := uuid.Parse(c.Param("playerID"))
+	playerId, err := uuid.Parse(c.Param("userID"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
