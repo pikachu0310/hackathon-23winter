@@ -230,3 +230,24 @@ func (h *Handler) generateKemonoStatusAndUpdateKemono(c echo.Context, kemonoID u
 
 	return nil
 }
+
+func (h *Handler) generateKemonoCharacterChipAndUpdateKemono(c echo.Context, kemonoID uuid.UUID) error {
+	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	kemonoCharacterChip, err := api.GenerateKemonoCharacterChip(kemono)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+	kemono.Kind = kemonoCharacterChip.Kind
+	kemono.Color = kemonoCharacterChip.Color
+
+	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	return nil
+}
