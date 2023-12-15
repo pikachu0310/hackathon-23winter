@@ -1,12 +1,12 @@
-package repository
+package api
 
 import (
 	"fmt"
-	"github.com/pikachu0310/hackathon-23winter/internal/repository/api"
+	"github.com/pikachu0310/hackathon-23winter/internal/domains"
 	"strings"
 )
 
-func GenerateImagePrompt(concepts Concepts) (api.ChatMessages, error) {
+func createKemonoPromptPrompt(concepts domains.Concepts) (ChatMessages, error) {
 	/*
 		以下の文章から、画像生成モデルDALL-E 3に画像を生成させるためのプロンプトを生成して、そのプロンプトだけを出力してください。
 
@@ -51,8 +51,8 @@ func GenerateImagePrompt(concepts Concepts) (api.ChatMessages, error) {
 		- デザイン用のカラーを含まない
 	*/
 
-	var messages api.ChatMessages
-	var userContent1 api.MessageContents
+	var messages ChatMessages
+	var userContent1 MessageContents
 	err := userContent1.AddText("以下の文章から、画像生成モデルDALL-E 3に画像を生成させるためのプロンプトを生成して、そのプロンプトだけを出力してください。\n\nあなたには、かわいいマスコットやケモノやマモノたちが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。\nまずは、ケモノのキャラクターを生成してください。\n特徴は以下の通りです。\n- とてもかわいい\n- マスコット\n- 四足歩行\n- 目が覚めたら森の中だった\n- ポケモンのようなイメージ\n- 色は鮮やかめ\n- 水属性\n\n生成する際は、以下の事を注意して守ってください。\n- キャラクターは1体\n- ゲームの敵として出てきても違和感がない\n- そのままゲームに使える\n- デザイン用のカラーを含まない")
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func GenerateImagePrompt(concepts Concepts) (api.ChatMessages, error) {
 	promptTexts = append(promptTexts, "\n生成する際は、以下の事を注意して守ってください。\n- キャラクターは1体\n- ゲームの敵として出てきても違和感がない\n- そのままゲームに使える\n- デザイン用のカラーを含まない")
 	promptText := strings.Join(promptTexts, "\n")
 
-	var userContent2 api.MessageContents
+	var userContent2 MessageContents
 	err = userContent2.AddText(promptText)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func GenerateImagePrompt(concepts Concepts) (api.ChatMessages, error) {
 	return messages, nil
 }
 
-func GenerateDescriptionPrompt(concepts Concepts, imageBase64 string) (messages api.ChatMessages, err error) {
+func createKemonoDescriptionPrompt(concepts domains.Concepts, imageBase64 string) (messages ChatMessages, err error) {
 	/*
 		提供した画像を読み込んで、画像に書かれているキャラクターの性質や性格や、特徴やできることを推測して、400文字程度で出力してください。
 
@@ -99,7 +99,7 @@ func GenerateDescriptionPrompt(concepts Concepts, imageBase64 string) (messages 
 
 		提供した画像を読み込んで、画像に書かれているキャラクターの性質や性格や、特徴やできることを推測して、400文字程度で出力してください。
 	*/
-	var contents api.MessageContents
+	var contents MessageContents
 	err = contents.AddImage(imageBase64)
 	if err != nil {
 		return

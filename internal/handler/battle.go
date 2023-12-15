@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"github.com/pikachu0310/hackathon-23winter/internal/repository"
+	"github.com/pikachu0310/hackathon-23winter/internal/domains"
 	"github.com/pikachu0310/hackathon-23winter/internal/repository/api"
 	"net/http"
 	"strconv"
@@ -158,11 +158,11 @@ func (h *Handler) PostBattleDamage(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func DefaultBattleText(attacker repository.Kemono, defender repository.Kemono) string {
+func DefaultBattleText(attacker domains.Kemono, defender domains.Kemono) string {
 	return fmt.Sprintf("%sは", *attacker.Name)
 }
 
-func GenerateBattlePromptText(attacker repository.Kemono, defender repository.Kemono, damage int, battleText string) string {
+func GenerateBattlePromptText(attacker domains.Kemono, defender domains.Kemono, damage int, battleText string) string {
 	var prompt []string
 	/*
 		この物語は、ゲームの世界でケモノ達がバトルを繰り広げる世界の中で、二匹のケモノがバトルをしているところを描いた物語です。

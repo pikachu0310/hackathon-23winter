@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"github.com/pikachu0310/hackathon-23winter/internal/repository"
+	"github.com/pikachu0310/hackathon-23winter/internal/domains"
 	"github.com/pikachu0310/hackathon-23winter/src/images"
 	"net/http"
 	"strconv"
@@ -13,32 +13,32 @@ import (
 type (
 	/*
 		Kemono struct {
-			ID            *uuid.UUID `db:"id"`
-			Image         []byte     `db:"image"`
-			Prompt        *string    `db:"prompt"`
-			Concepts      *string    `db:"concepts"`
-			Name          *string    `db:"name"`
-			Description   *string    `db:"description"`
-			CharacterChip *int       `db:"character_chip"`
-			IsPlayer      *bool      `db:"is_player"`
-			PlayerID      *uuid.UUID `db:"player_id"`
-			IsOwned       *bool      `db:"is_owned"`
-			OwnerID       *uuid.UUID `db:"owner_id"`
-			IsInField     *bool      `db:"is_in_field"`
-			IsBoss        *bool      `db:"is_boss"`
-			Field         *int       `db:"field"`
-			X             *int       `db:"x"`
-			Y             *int       `db:"y"`
-			HasParent     *bool      `db:"has_parent"`
-			Parent1ID     *uuid.UUID `db:"parent1_id"`
-			Parent2ID     *uuid.UUID `db:"parent2_id"`
-			HasChild      *bool      `db:"has_child"`
-			ChildID       *uuid.UUID `db:"child_id"`
-			MaxHp         *int       `db:"max_hp"`
-			Hp            *int       `db:"hp"`
-			Attack        *int       `db:"attack"`
-			Defense       *int       `db:"defense"`
-			CreatedAt     *string    `db:"created_at"`
+			ID            *uuid.UUID    `db:"id"`
+			Image         []byte        `db:"image"`
+			Prompt        *string       `db:"prompt"`
+			Concepts      *ConceptsText `db:"concepts"`
+			Name          *string       `db:"name"`
+			Description   *string       `db:"description"`
+			CharacterChip *int          `db:"character_chip"`
+			IsPlayer      *bool         `db:"is_player"`
+			IsForBattle   *bool         `db:"is_for_battle"`
+			IsOwned       *bool         `db:"is_owned"`
+			OwnerID       *uuid.UUID    `db:"owner_id"`
+			IsInField     *bool         `db:"is_in_field"`
+			IsBoss        *bool         `db:"is_boss"`
+			Field         *int          `db:"field"`
+			X             *int          `db:"x"`
+			Y             *int          `db:"y"`
+			HasParent     *bool         `db:"has_parent"`
+			Parent1ID     *uuid.UUID    `db:"parent1_id"`
+			Parent2ID     *uuid.UUID    `db:"parent2_id"`
+			HasChild      *bool         `db:"has_child"`
+			ChildID       *uuid.UUID    `db:"child_id"`
+			MaxHp         *int          `db:"max_hp"`
+			Hp            *int          `db:"hp"`
+			Attack        *int          `db:"attack"`
+			Defense       *int          `db:"defense"`
+			CreatedAt     *string       `db:"created_at"`
 		}
 	*/
 
@@ -53,7 +53,7 @@ type (
 		Description   string    `json:"description"`
 		CharacterChip int       `json:"character_chip"`
 		IsPlayer      bool      `json:"is_player"`
-		PlayerID      uuid.UUID `json:"player_id"`
+		IsForBattle   bool      `json:"is_for_battle"`
 		IsOwned       bool      `json:"is_owned"`
 		OwnerID       uuid.UUID `json:"owner_id"`
 		IsInField     bool      `json:"is_in_field"`
@@ -74,7 +74,7 @@ type (
 	}
 )
 
-func kemonoToGetKemonoResponse(kemono *repository.Kemono) GetKemonoResponse {
+func kemonoToGetKemonoResponse(kemono *domains.Kemono) GetKemonoResponse {
 	return GetKemonoResponse{
 		ID:            *kemono.ID,
 		Image:         kemono.Image,
@@ -84,7 +84,7 @@ func kemonoToGetKemonoResponse(kemono *repository.Kemono) GetKemonoResponse {
 		Description:   *kemono.Description,
 		CharacterChip: *kemono.CharacterChip,
 		IsPlayer:      *kemono.IsPlayer,
-		PlayerID:      *kemono.PlayerID,
+		IsForBattle:   *kemono.IsForBattle,
 		IsOwned:       *kemono.IsOwned,
 		OwnerID:       *kemono.OwnerID,
 		IsInField:     *kemono.IsInField,
@@ -184,7 +184,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 	id3, _ := uuid.Parse("00000000-0000-0000-0000-000000000003")
 	id4, _ := uuid.Parse("00000000-0000-0000-0000-000000000004")
 
-	kemonoParams := &repository.KemonoParams{
+	kemonoParams := &domains.KemonoParams{
 		ID:            id1,
 		Image:         images.TestKemonoImageAqua,
 		Prompt:        "Create a single, cute, four-legged kemomimi (animal-eared) character for a game. This character should have the appearance of waking up in a forest, similar to a Pokemon style. The design should be vividly colored and embody the water element, ensuring it fits as a potential enemy in the game without feeling out of place. The character should be immediately usable in a game, designed without any specific color palettes or markers used for design purposes.",
@@ -193,7 +193,6 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		Description:   "このキャラクターは、やさしい目とふわふわの尾を持つ水属性の森の精霊です。生まれながらにして森を潤し、清らかな水を操る能力を持つ。その鮮やかな色合いは森の生命力を象徴し、可愛らしい外見にもかかわらず、敵には強力な水の魔法で立ち向かう勇敢さを秘めている。",
 		CharacterChip: 1,
 		IsPlayer:      true,
-		PlayerID:      id1,
 		IsOwned:       true,
 		OwnerID:       id1,
 		IsInField:     false,
@@ -216,7 +215,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		return err
 	}
 
-	kemonoParams = &repository.KemonoParams{
+	kemonoParams = &domains.KemonoParams{
 		ID:            id2,
 		Image:         images.TestKemonoImageFire,
 		Prompt:        "Create a single, cute, four-legged kemomimi (animal-eared) character for a game. This character should have the appearance of waking up in a forest, inspired by Pokemon-style creatures. The design should be brightly colored and embody the fire element, ensuring it fits as a potential enemy in the game without feeling out of place. The character should be immediately usable in a game, designed without any specific color palettes or markers used for design purposes.",
@@ -225,7 +224,6 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		Description:   "このキャラクターは、炎属性を持つ森の守り神であり、その生き生きとしたオレンジと赤の色合いが情熱と元気を象徴しています。ふわふわの耳と尾はその愛らしさを際立たせる一方で、目には決意と勇気が宿っており、戦いのときには強い炎を操る力を秘めています。このキャラクターは森を通り抜ける冒険者にとって、時には可愛らしいガイドとなり、時には炎の魔法で道を阻む挑戦者となります。その愛くるしい外見に騙されてはならず、彼の炎の力は敵を一瞬にして灰に変えるほど強力です。",
 		CharacterChip: 2,
 		IsPlayer:      false,
-		PlayerID:      uuid.Nil,
 		IsOwned:       true,
 		OwnerID:       id1,
 		IsInField:     false,
@@ -248,7 +246,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		return err
 	}
 
-	kemonoParams = &repository.KemonoParams{
+	kemonoParams = &domains.KemonoParams{
 		ID:            id3,
 		Image:         images.TestKemonoImageFire,
 		Prompt:        "Create a single, cute, four-legged kemomimi (animal-eared) character for a game. This character should have the appearance of waking up in a forest, inspired by Pokemon-style creatures. The design should be brightly colored and embody the fire element, ensuring it fits as a potential enemy in the game without feeling out of place. The character should be immediately usable in a game, designed without any specific color palettes or markers used for design purposes.",
@@ -257,7 +255,6 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		Description:   "このキャラクターは、炎属性を持つ森の守り神であり、その生き生きとしたオレンジと赤の色合いが情熱と元気を象徴しています。ふわふわの耳と尾はその愛らしさを際立たせる一方で、目には決意と勇気が宿っており、戦いのときには強い炎を操る力を秘めています。このキャラクターは森を通り抜ける冒険者にとって、時には可愛らしいガイドとなり、時には炎の魔法で道を阻む挑戦者となります。その愛くるしい外見に騙されてはならず、彼の炎の力は敵を一瞬にして灰に変えるほど強力です。",
 		CharacterChip: 3,
 		IsPlayer:      false,
-		PlayerID:      uuid.Nil,
 		IsOwned:       false,
 		OwnerID:       uuid.Nil,
 		IsInField:     true,
@@ -280,7 +277,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		return err
 	}
 
-	kemonoParams = &repository.KemonoParams{
+	kemonoParams = &domains.KemonoParams{
 		ID:            id4,
 		Image:         images.TestKemonoImageAqua,
 		Prompt:        "Create a single, cute, four-legged kemomimi (animal-eared) character for a game. This character should have the appearance of waking up in a forest, similar to a Pokemon style. The design should be vividly colored and embody the water element, ensuring it fits as a potential enemy in the game without feeling out of place. The character should be immediately usable in a game, designed without any specific color palettes or markers used for design purposes.",
@@ -289,7 +286,6 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		Description:   "このキャラクターは、やさしい目とふわふわの尾を持つ水属性の森の精霊です。生まれながらにして森を潤し、清らかな水を操る能力を持つ。その鮮やかな色合いは森の生命力を象徴し、可愛らしい外見にもかかわらず、敵には強力な水の魔法で立ち向かう勇敢さを秘めている。",
 		CharacterChip: 1,
 		IsPlayer:      false,
-		PlayerID:      uuid.Nil,
 		IsOwned:       false,
 		OwnerID:       uuid.Nil,
 		IsInField:     true,
@@ -375,7 +371,7 @@ func (h *Handler) ExtractKemono(c echo.Context) error {
 	}
 
 	for _, concept := range kemono.Concepts.Concepts() {
-		_, err = h.repo.CreateConcept(*kemono.PlayerID, concept)
+		_, err = h.repo.CreateConcept(*kemono.OwnerID, concept)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 		}

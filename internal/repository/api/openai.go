@@ -146,11 +146,11 @@ func addAPIKeyToRequest(apiKey string) openai.RequestEditorFn {
 	}
 }
 
-func GenerateKemonoImage(generateKemonoPromptText string) (*[]byte, error) {
+func GenerateKemonoImage(generateKemonoPromptText *string) ([]byte, error) {
 	req := openai_api.CreateImageRequest{
 		Model:          &createImageModel,
 		N:              &createImageN,
-		Prompt:         generateKemonoPromptText,
+		Prompt:         *generateKemonoPromptText,
 		Quality:        &createImageQuality,
 		ResponseFormat: &createImageFormat,
 		Size:           &createImageSize,
@@ -172,7 +172,7 @@ func GenerateKemonoImage(generateKemonoPromptText string) (*[]byte, error) {
 		return nil, err
 	}
 
-	return &data, nil
+	return data, nil
 }
 
 func GenerateTextByGPT4(messages ChatMessages) (*string, error) {

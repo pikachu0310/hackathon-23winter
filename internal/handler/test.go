@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"github.com/pikachu0310/hackathon-23winter/internal/repository"
+	"github.com/pikachu0310/hackathon-23winter/internal/domains"
 	"github.com/pikachu0310/hackathon-23winter/internal/repository/api"
 	"github.com/pikachu0310/hackathon-23winter/src/images"
 	"net/http"
@@ -19,12 +19,13 @@ type Test2Response struct {
 
 // GET /api/v1/test
 func (h *Handler) Test(c echo.Context) error {
-	image, err := api.GenerateKemonoImage("test")
+	test := "test"
+	image, err := api.GenerateKemonoImage(&test)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
-	kemonoParams := &repository.KemonoParams{
+	kemonoParams := &domains.KemonoParams{
 		ID:    uuid.New(),
 		Image: images.TestKemonoImageFire,
 	}
@@ -35,7 +36,7 @@ func (h *Handler) Test(c echo.Context) error {
 	}
 
 	res := TestResponse{
-		ImageString: *image,
+		ImageString: image,
 	}
 
 	return c.JSON(http.StatusOK, res)
@@ -101,21 +102,24 @@ func (h *Handler) Test4(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid kemonoID").SetInternal(err)
 	}
+
 	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoId)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
 	}
 
-	prompt, err := repository.GenerateImagePrompt(kemono.Concepts.Concepts())
+	prompt, err := api.GenerateKemonoPrompt(kemono)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
 	}
-	imagePrompt, err := api.GenerateTextByGPT4(prompt)
+	kemono.Prompt = prompt
+
+	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
 	}
 
-	return c.String(http.StatusOK, *imagePrompt)
+	return c.String(http.StatusOK, *prompt)
 }
 
 // GET /api/v1/test/5 画像から説明の作成
@@ -130,16 +134,10 @@ func (h *Handler) Test5(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
 	}
 
-	prompt, err := repository.GenerateDescriptionPrompt(kemono.Concepts.Concepts(), api.ImageToBase64(kemono.Image))
-	if err != nil {
-		return err
-	}
-
-	kemonoDescription, err := api.GenerateTextByGPT4(prompt)
+	kemonoDescription, err := api.GenerateKemonoDescription(kemono)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
 	}
-
 	kemono.Description = kemonoDescription
 
 	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
@@ -148,4 +146,64 @@ func (h *Handler) Test5(c echo.Context) error {
 	}
 
 	return c.String(http.StatusOK, *kemonoDescription)
+}
+
+func (h *Handler) generateKemonoPromptAndUpdateKemono(c echo.Context, kemonoID uuid.UUID) error {
+	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	prompt, err := api.GenerateKemonoPrompt(kemono)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+	kemono.Prompt = prompt
+
+	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	return nil
+}
+
+func (h *Handler) generateKemonoImageAndUpdateKemono(c echo.Context, kemonoID uuid.UUID) error {
+	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	image, err := api.GenerateKemonoImage(kemono.Prompt)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+	kemono.Image = image
+
+	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	return nil
+}
+
+func (h *Handler) generateKemonoDescriptionAndUpdateKemono(c echo.Context, kemonoID uuid.UUID) error {
+	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	kemonoDescription, err := api.GenerateKemonoDescription(kemono)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+	kemono.Description = kemonoDescription
+
+	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	return nil
 }
