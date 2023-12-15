@@ -27,7 +27,7 @@ var (
 	createImageUser    = "pikachu0310"
 
 	createChatCompletionModel     openai_api.CreateChatCompletionRequest_Model
-	createChatCompletionMaxTokens = 4096
+	createChatCompletionMaxTokens = 1024
 	createChatCompletionN         = 1
 	createChatCompletionStream    = false
 )

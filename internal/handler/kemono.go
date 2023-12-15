@@ -1,12 +1,15 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/pikachu0310/hackathon-23winter/internal/domains"
 	"github.com/pikachu0310/hackathon-23winter/src/images"
+	"golang.org/x/sync/errgroup"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // スキーマ定義
@@ -608,6 +611,8 @@ func (h *Handler) ExtractKemono(c echo.Context) error {
 
 // POST /api/v1/kemonos/generate
 func (h *Handler) GenerateKemono(c echo.Context) error {
+	startTime := time.Now()
+
 	userID, err := uuid.Parse(c.FormValue("user_id"))
 	if err != nil || userID == uuid.Nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid user_id").SetInternal(err)
@@ -654,35 +659,64 @@ func (h *Handler) GenerateKemono(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
+	// 4s 3s 4s
 	err = h.generateKemonoPromptAndUpdateKemono(c, kemonoID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
+	fmt.Println(time.Now().Sub(startTime).Seconds())
+
+	// 13s 25s 15s
 	err = h.generateKemonoImageAndUpdateKemono(c, kemonoID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
+	fmt.Println(time.Now().Sub(startTime).Seconds())
+
+	// 16s 15s 31s
 	err = h.generateKemonoDescriptionAndUpdateKemono(c, kemonoID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
-	err = h.generateKemonoStatusAndUpdateKemono(c, kemonoID)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
-	}
+	fmt.Println(time.Now().Sub(startTime).Seconds())
 
-	err = h.generateKemonoCharacterChipAndUpdateKemono(c, kemonoID)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
-	}
+	// 11s 25s
+	var eg errgroup.Group
+	eg.Go(func() error {
+		// 5s
+		err = h.generateKemonoStatusAndUpdateKemono(c, kemonoID)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+		}
+		return nil
+	})
 
-	err = h.generateKemonoNameAndUpdateKemono(c, kemonoID)
+	eg.Go(func() error {
+		// 17s
+		err = h.generateKemonoCharacterChipAndUpdateKemono(c, kemonoID)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+		}
+		return nil
+	})
+
+	eg.Go(func() error {
+		// 7s
+		err = h.generateKemonoNameAndUpdateKemono(c, kemonoID)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+		}
+		return nil
+	})
+
+	err = eg.Wait()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
+	fmt.Println(time.Now().Sub(startTime).Seconds())
 
 	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
 	if err != nil {

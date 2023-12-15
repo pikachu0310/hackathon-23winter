@@ -12,6 +12,7 @@ require (
 	github.com/oapi-codegen/runtime v1.1.0
 	github.com/ory/dockertest/v3 v3.10.0
 	github.com/pressly/goose/v3 v3.11.2
+	golang.org/x/sync v0.1.0
 )
 
 require (
