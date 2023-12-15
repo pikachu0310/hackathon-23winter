@@ -140,7 +140,7 @@ func (h *Handler) PostBattleDamage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
-	prompt := GenerateBattlePrompt(*myKemono, *enemyKemono, req.Damage, *battle.Text)
+	prompt := GenerateBattlePromptText(*myKemono, *enemyKemono, req.Damage, *battle.Text)
 	text, err := api.GetGeneratedText(fmt.Sprintf(prompt))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
@@ -162,7 +162,7 @@ func DefaultBattleText(attacker repository.Kemono, defender repository.Kemono) s
 	return fmt.Sprintf("%sは", *attacker.Name)
 }
 
-func GenerateBattlePrompt(attacker repository.Kemono, defender repository.Kemono, damage int, battleText string) string {
+func GenerateBattlePromptText(attacker repository.Kemono, defender repository.Kemono, damage int, battleText string) string {
 	var prompt []string
 	/*
 		この物語は、ゲームの世界でケモノ達がバトルを繰り広げる世界の中で、二匹のケモノがバトルをしているところを描いた物語です。

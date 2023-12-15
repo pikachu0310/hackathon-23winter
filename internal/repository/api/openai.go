@@ -146,11 +146,11 @@ func addAPIKeyToRequest(apiKey string) openai.RequestEditorFn {
 	}
 }
 
-func GenerateKemonoImage() (*[]byte, error) {
+func GenerateKemonoImage(generateKemonoPromptText string) (*[]byte, error) {
 	req := openai_api.CreateImageRequest{
 		Model:          &createImageModel,
 		N:              &createImageN,
-		Prompt:         "Create a digital illustration of a single cute, four-legged kemomimi character that would fit as a mascot in a vibrant game world inhabited by various creatures. The character has just awakened in a lush forest, reminiscent of a Pokémon in style. It should have bright, eye-catching colors indicative of its water element, suggesting magical abilities. The character must look fitting to encounter as a potential friendly or enemy entity in a fantasy game environment, and it should be designed ready to use in a game without any additional color palette indicators or design drafts.",
+		Prompt:         generateKemonoPromptText,
 		Quality:        &createImageQuality,
 		ResponseFormat: &createImageFormat,
 		Size:           &createImageSize,
