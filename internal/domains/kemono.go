@@ -1,6 +1,11 @@
 package domains
 
-import "github.com/google/uuid"
+import (
+	"fmt"
+	"github.com/google/uuid"
+	"strconv"
+	"strings"
+)
 
 type (
 	/*
@@ -123,4 +128,50 @@ func (kemonoParams *KemonoParams) ToKemono() *Kemono {
 		Defense:       &kemonoParams.Defense,
 		CreatedAt:     &kemonoParams.CreatedAt,
 	}
+}
+
+type KemonoStatus struct {
+	MaxHP   *int
+	Attack  *int
+	Defence *int
+}
+
+func ParseKemonoStatus(s *string) (*KemonoStatus, error) {
+	// 改行文字で分割して各行を処理
+	lines := strings.Split(*s, "\n")
+
+	// status構造体の初期化
+	st := KemonoStatus{}
+
+	// 各行を繰り返し処理
+	for _, line := range lines {
+		// "="で分割してキーと値を取得
+		parts := strings.Split(line, "=")
+		if len(parts) != 2 {
+			continue // "="が含まれていない行は無視
+		}
+
+		// キーに応じて構造体に値を設定
+		key := strings.TrimSpace(parts[0])
+		value, err := strconv.Atoi(strings.TrimSpace(parts[1]))
+		if err != nil {
+			continue // 数値に変換できない行は無視
+		}
+
+		switch key {
+		case "MaxHP":
+			st.MaxHP = &value
+		case "Attack":
+			st.Attack = &value
+		case "Defence":
+			st.Defence = &value
+		}
+	}
+
+	// 全てのキーがセットされたかチェック
+	if st.MaxHP == nil || st.Attack == nil || st.Defence == nil {
+		return nil, fmt.Errorf("missing status values")
+	}
+
+	return &st, nil
 }

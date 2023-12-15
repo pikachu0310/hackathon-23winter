@@ -3,8 +3,8 @@ package handler
 import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/pikachu0310/hackathon-23winter/internal/api"
 	"github.com/pikachu0310/hackathon-23winter/internal/domains"
-	"github.com/pikachu0310/hackathon-23winter/internal/repository/api"
 	"github.com/pikachu0310/hackathon-23winter/src/images"
 	"net/http"
 )
@@ -199,6 +199,29 @@ func (h *Handler) generateKemonoDescriptionAndUpdateKemono(c echo.Context, kemon
 		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
 	}
 	kemono.Description = kemonoDescription
+
+	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	return nil
+}
+
+func (h *Handler) generateKemonoStatusAndUpdateKemono(c echo.Context, kemonoID uuid.UUID) error {
+	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+
+	kemonoStatus, err := api.GenerateKemonoStatus(kemono)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+	}
+	kemono.MaxHp = kemonoStatus.MaxHP
+	kemono.Hp = kemonoStatus.MaxHP
+	kemono.Attack = kemonoStatus.Attack
+	kemono.Defense = kemonoStatus.Defence
 
 	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
 	if err != nil {

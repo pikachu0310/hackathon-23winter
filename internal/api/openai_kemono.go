@@ -13,7 +13,7 @@ func GenerateKemonoPrompt(kemono *domains.Kemono) (*string, error) {
 }
 
 func GenerateKemonoDescription(kemono *domains.Kemono) (*string, error) {
-	prompt, err := createKemonoDescriptionPrompt(kemono.Concepts.Concepts(), ImageToBase64(kemono.Image))
+	prompt, err := createKemonoDescriptionPrompt(kemono.Concepts.Concepts(), kemono.Image)
 	if err != nil {
 		return nil, err
 	}
@@ -21,7 +21,7 @@ func GenerateKemonoDescription(kemono *domains.Kemono) (*string, error) {
 }
 
 func GenerateKemonoStatus(kemono *domains.Kemono) (*domains.KemonoStatus, error) {
-	prompt, err := createKemonoStatusPrompt(kemono.Description, kemono.Concepts.Concepts(), ImageToBase64(kemono.Image))
+	prompt, err := createKemonoStatusPrompt(kemono.Description, kemono.Concepts.Concepts(), kemono.Image)
 	if err != nil {
 		return nil, err
 	}
@@ -31,5 +31,3 @@ func GenerateKemonoStatus(kemono *domains.Kemono) (*domains.KemonoStatus, error)
 	}
 	return domains.ParseKemonoStatus(kemonoStatusText)
 }
-
-func

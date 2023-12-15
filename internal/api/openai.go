@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/pikachu0310/hackathon-23winter/internal/api/openai"
+	"github.com/pikachu0310/hackathon-23winter/internal/api/openai/openai_api"
 	"github.com/pikachu0310/hackathon-23winter/internal/pkg/config"
-	"github.com/pikachu0310/hackathon-23winter/internal/repository/api/openai"
-	"github.com/pikachu0310/hackathon-23winter/internal/repository/api/openai/openai_api"
 	"log"
 	"net/http"
 )
@@ -121,13 +121,13 @@ func (messageContents *MessageContents) AddText(text string) error {
 	return nil
 }
 
-func (messageContents *MessageContents) AddImage(imageBase64 *string) error {
+func (messageContents *MessageContents) AddImage(image []byte) error {
 	var messageContentPart openai_api.ChatCompletionRequestMessageContentPart
 	var messageContentPartImage openai_api.ChatCompletionRequestMessageContentPartImage
 	messageContentPartImage.ImageUrl = struct {
 		Detail *openai_api.ChatCompletionRequestMessageContentPartImageImageUrlDetail `json:"detail,omitempty"`
 		Url    string                                                                 `json:"url"`
-	}{Url: fmt.Sprintf("data:image/png;base64,%s", *imageBase64)}
+	}{Url: fmt.Sprintf("data:image/png;base64,%s", *ImageToBase64(image))}
 	messageContentPartImage.Type = openai_api.ImageUrl
 
 	err := messageContentPart.FromChatCompletionRequestMessageContentPartImage(messageContentPartImage)

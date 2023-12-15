@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/pikachu0310/hackathon-23winter/internal/domains"
+	"github.com/pikachu0310/hackathon-23winter/src/images"
 	"strings"
 )
 
@@ -87,7 +88,7 @@ func createKemonoPromptPrompt(concepts domains.Concepts) (messages ChatMessages,
 	return messages, nil
 }
 
-func createKemonoDescriptionPrompt(concepts domains.Concepts, imageBase64 *string) (messages ChatMessages, err error) {
+func createKemonoDescriptionPrompt(concepts domains.Concepts, image []byte) (messages ChatMessages, err error) {
 	/*
 		提供した画像を読み込んで、画像に書かれているキャラクターの性質や性格や、特徴やできることを推測して、400文字程度で出力してください。
 
@@ -99,7 +100,7 @@ func createKemonoDescriptionPrompt(concepts domains.Concepts, imageBase64 *strin
 		提供した画像を読み込んで、画像に書かれているキャラクターの性質や性格や、特徴やできることを推測して、400文字程度で出力してください。
 	*/
 	var contents MessageContents
-	err = contents.AddImage(imageBase64)
+	err = contents.AddImage(image)
 	if err != nil {
 		return
 	}
@@ -123,7 +124,7 @@ func createKemonoDescriptionPrompt(concepts domains.Concepts, imageBase64 *strin
 	return messages, nil
 }
 
-func createKemonoStatusPrompt(description *string, concepts domains.Concepts, imageBase64 *string) (messages ChatMessages, err error) {
+func createKemonoStatusPrompt(description *string, concepts domains.Concepts, image []byte) (messages ChatMessages, err error) {
 	/*
 		あなたには、かわいいマスコットやケモノやマモノたちが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。
 
@@ -178,7 +179,7 @@ func createKemonoStatusPrompt(description *string, concepts domains.Concepts, im
 	*/
 
 	var userContent1 MessageContents
-	err = userContent1.AddImage(imageBase64)
+	err = userContent1.AddImage(images.TestKemonoImageAqua)
 	if err != nil {
 		return
 	}
@@ -206,6 +207,23 @@ func createKemonoStatusPrompt(description *string, concepts domains.Concepts, im
 	promptText := strings.Join(promptTexts, "\n")
 
 	var userContent2 MessageContents
+	err = userContent2.AddImage(image)
+	if err != nil {
+		return
+	}
+	err = userContent2.AddText(promptText)
+	if err != nil {
+		return nil, err
+	}
+
+	err = messages.AddUserMessageContent(userContent2)
+	if err != nil {
+		return nil, err
+	}
+
+	return messages, nil
+}
+
 	err = userContent2.AddText(promptText)
 	if err != nil {
 		return nil, err

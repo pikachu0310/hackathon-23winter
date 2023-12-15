@@ -8,7 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/pikachu0310/hackathon-23winter/internal/repository/api/openai/openai_api"
+	"github.com/pikachu0310/hackathon-23winter/internal/api/openai/openai_api"
 	"io"
 	"net/http"
 	"net/url"
