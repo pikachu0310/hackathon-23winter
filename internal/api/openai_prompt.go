@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func createKemonoPromptPrompt(concepts domains.Concepts) (ChatMessages, error) {
+func createKemonoPromptPrompt(concepts domains.Concepts) (messages ChatMessages, err error) {
 	/*
 		以下の文章から、画像生成モデルDALL-E 3に画像を生成させるためのプロンプトを生成して、そのプロンプトだけを出力してください。
 
@@ -51,9 +51,8 @@ func createKemonoPromptPrompt(concepts domains.Concepts) (ChatMessages, error) {
 		- デザイン用のカラーを含まない
 	*/
 
-	var messages ChatMessages
 	var userContent1 MessageContents
-	err := userContent1.AddText("以下の文章から、画像生成モデルDALL-E 3に画像を生成させるためのプロンプトを生成して、そのプロンプトだけを出力してください。\n\nあなたには、かわいいマスコットやケモノやマモノたちが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。\nまずは、ケモノのキャラクターを生成してください。\n特徴は以下の通りです。\n- とてもかわいい\n- マスコット\n- 四足歩行\n- 目が覚めたら森の中だった\n- ポケモンのようなイメージ\n- 色は鮮やかめ\n- 水属性\n\n生成する際は、以下の事を注意して守ってください。\n- キャラクターは1体\n- ゲームの敵として出てきても違和感がない\n- そのままゲームに使える\n- デザイン用のカラーを含まない")
+	err = userContent1.AddText("以下の文章から、画像生成モデルDALL-E 3に画像を生成させるためのプロンプトを生成して、そのプロンプトだけを出力してください。\n\nあなたには、かわいいマスコットやケモノやマモノたちが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。\nまずは、ケモノのキャラクターを生成してください。\n特徴は以下の通りです。\n- とてもかわいい\n- マスコット\n- 四足歩行\n- 目が覚めたら森の中だった\n- ポケモンのようなイメージ\n- 色は鮮やかめ\n- 水属性\n\n生成する際は、以下の事を注意して守ってください。\n- キャラクターは1体\n- ゲームの敵として出てきても違和感がない\n- そのままゲームに使える\n- デザイン用のカラーを含まない")
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +87,7 @@ func createKemonoPromptPrompt(concepts domains.Concepts) (ChatMessages, error) {
 	return messages, nil
 }
 
-func createKemonoDescriptionPrompt(concepts domains.Concepts, imageBase64 string) (messages ChatMessages, err error) {
+func createKemonoDescriptionPrompt(concepts domains.Concepts, imageBase64 *string) (messages ChatMessages, err error) {
 	/*
 		提供した画像を読み込んで、画像に書かれているキャラクターの性質や性格や、特徴やできることを推測して、400文字程度で出力してください。
 
@@ -119,6 +118,102 @@ func createKemonoDescriptionPrompt(concepts domains.Concepts, imageBase64 string
 	err = messages.AddUserMessageContent(contents)
 	if err != nil {
 		return
+	}
+
+	return messages, nil
+}
+
+func createKemonoStatusPrompt(description *string, concepts domains.Concepts, imageBase64 *string) (messages ChatMessages, err error) {
+	/*
+		あなたには、かわいいマスコットやケモノやマモノたちが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。
+
+		提供した画像を読み込んで、提供した画像に書かれているケモノのキャラクターのステータスパラメーター(最大HPと攻撃力と防御力)を考えて出力してください。
+		ケモノのキャラクターのステータスパラメーターを考える際は、画像のキャラクターの見た目と、以下に書くキャラクターの特徴や概念を参考にしてください。
+		ケモノのキャラクターのステータスパラメーターを出力する際は、以下のフォーマットに従ってください。
+		```
+		MaxHP=100
+		Attack=10
+		Defence=5
+		```
+
+		ケモノのキャラクターの特徴は以下の通りです。
+		- このキャラクターは、やさしい目とふわふわの尾を持つ水属性の森の精霊です。生まれながらにして森を潤し、清らかな水を操る能力を持つ。その鮮やかな色合いは森の生命力を象徴し、可愛らしい外見にもかかわらず、敵には強力な水の魔法で立ち向かう勇敢さを秘めている。
+
+		ケモノのキャラクターが持つ概念は以下の通りです。
+		- とてもかわいい
+		- マスコット
+		- 四足歩行
+		- 目が覚めたら森の中だった
+		- ポケモンのようなイメージ
+		- 色は鮮やかめ
+		- 炎属性
+
+		それでは、考えたケモノのキャラクターのステータスパラメーターを以下のフォーマットに従って出力してください。
+		```
+		MaxHP=100
+		Attack=10
+		Defence=5
+		```
+	*/
+	/*
+		MaxHP=70
+		Attack=8
+		Defence=6
+	*/
+	/*
+		完璧です！まったく同じようにして、以下のケモノのステータスパラメーターも考えてください。
+
+		ケモノのキャラクターの特徴は以下の通りです。
+		- %s
+
+		ケモノのキャラクターが持つ概念は以下の通りです。
+		- %s
+
+		それでは、考えたケモノのキャラクターのステータスパラメーターを以下のフォーマットに従って出力してください。
+		```
+		MaxHP=100
+		Attack=10
+		Defence=5
+		```
+	*/
+
+	var userContent1 MessageContents
+	err = userContent1.AddImage(imageBase64)
+	if err != nil {
+		return
+	}
+	err = userContent1.AddText("あなたには、かわいいマスコットやケモノやマモノたちが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。\n\n提供した画像を読み込んで、提供した画像に書かれているケモノのキャラクターのステータスパラメーター(最大HPと攻撃力と防御力)を考えて出力してください。\nケモノのキャラクターのステータスパラメーターを考える際は、画像のキャラクターの見た目と、以下に書くキャラクターの特徴や概念を参考にしてください。\nケモノのキャラクターのステータスパラメーターを出力する際は、以下のフォーマットに従ってください。\n```\nMaxHP=100\nAttack=10\nDefence=5\n```\n\nケモノのキャラクターの特徴は以下の通りです。\n- このキャラクターは、やさしい目とふわふわの尾を持つ水属性の森の精霊です。生まれながらにして森を潤し、清らかな水を操る能力を持つ。その鮮やかな色合いは森の生命力を象徴し、可愛らしい外見にもかかわらず、敵には強力な水の魔法で立ち向かう勇敢さを秘めている。\n\nケモノのキャラクターが持つ概念は以下の通りです。\n- とてもかわいい\n- マスコット\n- 四足歩行\n- 目が覚めたら森の中だった\n- ポケモンのようなイメージ\n- 色は鮮やかめ\n- 炎属性\n\nそれでは、考えたケモノのキャラクターのステータスパラメーターを以下のフォーマットに従って出力してください。\n```\nMaxHP=100\nAttack=10\nDefence=5\n```")
+	if err != nil {
+		return nil, err
+	}
+	err = messages.AddUserMessageContent(userContent1)
+	if err != nil {
+		return nil, err
+	}
+	err = messages.AddAssistantMessageContent("MaxHP=70\nAttack=8\nDefence=6")
+	if err != nil {
+		return nil, err
+	}
+
+	var promptTexts []string
+	promptTexts = append(promptTexts, "完璧です！まったく同じようにして、以下のケモノのステータスパラメーターも考えてください。\n\nケモノのキャラクターの特徴は以下の通りです。")
+	promptTexts = append(promptTexts, fmt.Sprintf("- %s", *description))
+	promptTexts = append(promptTexts, "\nケモノのキャラクターが持つ概念は以下の通りです。")
+	for _, concept := range concepts {
+		promptTexts = append(promptTexts, fmt.Sprintf("- %s", concept))
+	}
+	promptTexts = append(promptTexts, "\nそれでは、考えたケモノのキャラクターのステータスパラメーターを以下のフォーマットに従って出力してください。\n```\nMaxHP=100\nAttack=10\nDefence=5\n```")
+	promptText := strings.Join(promptTexts, "\n")
+
+	var userContent2 MessageContents
+	err = userContent2.AddText(promptText)
+	if err != nil {
+		return nil, err
+	}
+
+	err = messages.AddUserMessageContent(userContent2)
+	if err != nil {
+		return nil, err
 	}
 
 	return messages, nil

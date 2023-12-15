@@ -19,3 +19,17 @@ func GenerateKemonoDescription(kemono *domains.Kemono) (*string, error) {
 	}
 	return GenerateTextByGPT4(prompt)
 }
+
+func GenerateKemonoStatus(kemono *domains.Kemono) (*domains.KemonoStatus, error) {
+	prompt, err := createKemonoStatusPrompt(kemono.Description, kemono.Concepts.Concepts(), ImageToBase64(kemono.Image))
+	if err != nil {
+		return nil, err
+	}
+	kemonoStatusText, err := GenerateTextByGPT4(prompt)
+	if err != nil {
+		return nil, err
+	}
+	return domains.ParseKemonoStatus(kemonoStatusText)
+}
+
+func
