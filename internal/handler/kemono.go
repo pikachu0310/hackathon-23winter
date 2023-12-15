@@ -569,13 +569,18 @@ func (h *Handler) ExtractKemono(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid kemonoID").SetInternal(err)
 	}
 
+	playerId, err := uuid.Parse(c.FormValue("player_id"))
+	if err != nil || playerId == uuid.Nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid player_id").SetInternal(err)
+	}
+
 	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
 	for _, concept := range kemono.Concepts.Concepts() {
-		_, err = h.repo.CreateConcept(*kemono.OwnerID, concept)
+		_, err = h.repo.CreateConcept(playerId, concept)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 		}
