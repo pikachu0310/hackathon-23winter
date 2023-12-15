@@ -179,3 +179,46 @@ func ParseKemonoStatus(s *string) (*KemonoStatus, error) {
 
 	return &st, nil
 }
+
+type KemonoCharacterChip struct {
+	Kind  *int
+	Color *int
+}
+
+func ParseKemonoCharacterChip(s *string) (*KemonoCharacterChip, error) {
+	// 改行文字で分割して各行を処理
+	lines := strings.Split(*s, "\n")
+
+	// KemonoCharacter構造体の初期化
+	kc := KemonoCharacterChip{}
+
+	// 各行を繰り返し処理
+	for _, line := range lines {
+		// "="で分割してキーと値を取得
+		parts := strings.Split(line, "=")
+		if len(parts) != 2 {
+			continue // "="が含まれていない行は無視
+		}
+
+		// キーに応じて構造体に値を設定
+		key := strings.TrimSpace(parts[0])
+		value, err := strconv.Atoi(strings.TrimSpace(parts[1]))
+		if err != nil {
+			continue // 数値に変換できない行は無視
+		}
+
+		switch key {
+		case "動物":
+			kc.Kind = &value
+		case "色":
+			kc.Color = &value
+		}
+	}
+
+	// 全てのキーがセットされたかチェック
+	if kc.Kind == nil || kc.Color == nil {
+		return nil, fmt.Errorf("missing character attributes")
+	}
+
+	return &kc, nil
+}

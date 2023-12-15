@@ -31,3 +31,16 @@ func GenerateKemonoStatus(kemono *domains.Kemono) (*domains.KemonoStatus, error)
 	}
 	return domains.ParseKemonoStatus(kemonoStatusText)
 }
+
+func GenerateKemonoCharacterChip(kemono *domains.Kemono) (*domains.KemonoCharacterChip, error) {
+	prompt, err := createKemonoCharacterChipPrompt(kemono.Description, kemono.Concepts.Concepts(), kemono.Image)
+	if err != nil {
+		return nil, err
+	}
+	kemonoCharacterChipText, err := GenerateTextByGPT4(prompt)
+	if err != nil {
+		return nil, err
+	}
+
+	return domains.ParseKemonoCharacterChip(kemonoCharacterChipText)
+}
