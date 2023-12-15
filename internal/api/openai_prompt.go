@@ -147,7 +147,7 @@ func createKemonoStatusPrompt(description *string, concepts domains.Concepts, im
 		- 目が覚めたら森の中だった
 		- ポケモンのようなイメージ
 		- 色は鮮やかめ
-		- 炎属性
+		- 水属性
 
 		それでは、考えたケモノのキャラクターのステータスパラメーターを以下のフォーマットに従って出力してください。
 		```
@@ -316,6 +316,92 @@ func createKemonoCharacterChipPrompt(description *string, concepts domains.Conce
 		promptTexts = append(promptTexts, fmt.Sprintf("- %s", concept))
 	}
 	promptTexts = append(promptTexts, "\n提供した画像を読み込んで、提供した画像に書かれているケモノのキャラクターが、以下の表のどの動物に最も近いか、そして以下の表のどの色に最も近いかを判断して、数字を出力してください。\n出力する際は、以下のフォーマットで出力してください。\n```\n動物=00\n色=04")
+	promptText := strings.Join(promptTexts, "\n")
+
+	var userContent2 MessageContents
+	err = userContent2.AddImage(image)
+	if err != nil {
+		return
+	}
+	err = userContent2.AddText(promptText)
+	if err != nil {
+		return nil, err
+	}
+
+	err = messages.AddUserMessageContent(userContent2)
+	if err != nil {
+		return nil, err
+	}
+
+	return messages, nil
+}
+
+func createKemonoNamePrompt(description *string, concepts domains.Concepts, image []byte) (messages ChatMessages, err error) {
+	/*
+		あなたには、かわいいマスコットやケモノやマモノたちが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。
+
+		提供した画像を読み込んで、提供した画像に書かれているケモノのキャラクターの名前を考えて出力してください。
+		ケモノのキャラクターの名前を考える際は、画像のキャラクターの見た目と、以下に書くキャラクターの特徴や概念を参考にしてください。
+		ケモノのキャラクターの名前を出力する際は、名前を1個だけ出力してください。
+
+		ケモノのキャラクターの特徴は以下の通りです。
+		- このキャラクターは、やさしい目とふわふわの尾を持つ水属性の森の精霊です。生まれながらにして森を潤し、清らかな水を操る能力を持つ。その鮮やかな色合いは森の生命力を象徴し、可愛らしい外見にもかかわらず、敵には強力な水の魔法で立ち向かう勇敢さを秘めている。
+
+		ケモノのキャラクターが持つ概念は以下の通りです。
+		- とてもかわいい
+		- マスコット
+		- 四足歩行
+		- 目が覚めたら森の中だった
+		- ポケモンのようなイメージ
+		- 色は鮮やかめ
+		- 水属性
+
+		では、このケモノキャラクターの名前を考えて出力してください。名前を出力する際は、名前だけを出力してください。
+	*/
+	/*
+		アクアリン
+	*/
+	/*
+		完璧です！まったく同じようにして、以下のケモノのキャラクターの名前も考えてください。
+		提供した画像を読み込んで、提供した画像に書かれているケモノのキャラクターの名前を考えて出力してください。
+		ケモノのキャラクターの名前を考える際は、画像のキャラクターの見た目と、以下に書くキャラクターの特徴や概念を参考にしてください。
+		ケモノのキャラクターの名前を出力する際は、名前を1個だけ出力してください。
+
+		ケモノのキャラクターの特徴は以下の通りです。
+		- %s
+
+		ケモノのキャラクターが持つ概念は以下の通りです。
+		- %s
+
+		では、このケモノキャラクターの名前を考えて出力してください。名前を出力する際は、名前だけを出力してください。
+	*/
+
+	var userContent1 MessageContents
+	err = userContent1.AddImage(images.TestKemonoImageAqua)
+	if err != nil {
+		return
+	}
+	err = userContent1.AddText("あなたには、かわいいマスコットやケモノやマモノたちが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。\n\n提供した画像を読み込んで、提供した画像に書かれているケモノのキャラクターの名前を考えて出力してください。\nケモノのキャラクターの名前を考える際は、画像のキャラクターの見た目と、以下に書くキャラクターの特徴や概念を参考にしてください。\nケモノのキャラクターの名前を出力する際は、名前を1個だけ出力してください。\n\nケモノのキャラクターの特徴は以下の通りです。\n- このキャラクターは、やさしい目とふわふわの尾を持つ水属性の森の精霊です。生まれながらにして森を潤し、清らかな水を操る能力を持つ。その鮮やかな色合いは森の生命力を象徴し、可愛らしい外見にもかかわらず、敵には強力な水の魔法で立ち向かう勇敢さを秘めている。\n\nケモノのキャラクターが持つ概念は以下の通りです。\n- とてもかわいい\n- マスコット\n- 四足歩行\n- 目が覚めたら森の中だった\n- ポケモンのようなイメージ\n- 色は鮮やかめ\n- 炎属性\n\nでは、このケモノキャラクターの名前を考えて出力してください。名前を出力する際は、名前だけを出力してください。")
+	if err != nil {
+		return nil, err
+	}
+	err = messages.AddUserMessageContent(userContent1)
+	if err != nil {
+		return nil, err
+	}
+	err = messages.AddAssistantMessageContent("アクアリン")
+	if err != nil {
+		return nil, err
+	}
+
+	var promptTexts []string
+	promptTexts = append(promptTexts, "完璧です！まったく同じようにして、以下のケモノのキャラクターの名前も考えてください。\n提供した画像を読み込んで、提供した画像に書かれているケモノのキャラクターの名前を考えて出力してください。\nケモノのキャラクターの名前を考える際は、画像のキャラクターの見た目と、以下に書くキャラクターの特徴や概念を参考にしてください。\nケモノのキャラクターの名前を出力する際は、名前を1個だけ出力してください。\n\nケモノのキャラクターの特徴は以下の通りです。")
+	promptTexts = append(promptTexts, fmt.Sprintf("- %s", *description))
+	promptTexts = append(promptTexts, "\nケモノのキャラクターが持つ概念は以下の通りです。")
+	for _, concept := range concepts {
+		promptTexts = append(promptTexts, fmt.Sprintf("- %s", concept))
+	}
+	promptTexts = append(promptTexts, "\nでは、このケモノキャラクターの名前を考えて出力してください。名前を出力する際は、名前だけを出力してください。")
 	promptText := strings.Join(promptTexts, "\n")
 
 	var userContent2 MessageContents

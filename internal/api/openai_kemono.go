@@ -44,3 +44,11 @@ func GenerateKemonoCharacterChip(kemono *domains.Kemono) (*domains.KemonoCharact
 
 	return domains.ParseKemonoCharacterChip(kemonoCharacterChipText)
 }
+
+func GenerateKemonoName(kemono *domains.Kemono) (*string, error) {
+	prompt, err := createKemonoNamePrompt(kemono.Description, kemono.Concepts.Concepts(), kemono.Image)
+	if err != nil {
+		return nil, err
+	}
+	return GenerateTextByGPT4(prompt)
+}
