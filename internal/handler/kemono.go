@@ -583,3 +583,89 @@ func (h *Handler) ExtractKemono(c echo.Context) error {
 
 	return c.NoContent(http.StatusOK)
 }
+
+// POST /api/v1/kemonos/generate
+func (h *Handler) GenerateKemono(c echo.Context) error {
+	userID, err := uuid.Parse(c.FormValue("user_id"))
+	if err != nil || userID == uuid.Nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid user_id").SetInternal(err)
+	}
+	conceptsString := c.FormValue("concepts")
+	if conceptsString == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid concepts")
+	}
+	conceptsText := domains.ConceptsText(conceptsString)
+
+	t := true
+	f := false
+	uuidNil := uuid.Nil
+	kemonoID, err := h.repo.CreateKemono(c.Request().Context(), &domains.Kemono{
+		ID:          nil,
+		Image:       nil,
+		Prompt:      nil,
+		Concepts:    &conceptsText,
+		Name:        nil,
+		Description: nil,
+		Kind:        nil,
+		Color:       nil,
+		IsPlayer:    &f,
+		IsForBattle: &f,
+		IsOwned:     &t,
+		OwnerID:     &userID,
+		IsInField:   &f,
+		IsBoss:      &f,
+		Field:       nil,
+		X:           nil,
+		Y:           nil,
+		HasParent:   &f,
+		Parent1ID:   &uuidNil,
+		Parent2ID:   &uuidNil,
+		HasChild:    &f,
+		ChildID:     &uuidNil,
+		MaxHp:       nil,
+		Hp:          nil,
+		Attack:      nil,
+		Defense:     nil,
+		CreatedAt:   nil,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	err = h.generateKemonoPromptAndUpdateKemono(c, kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	err = h.generateKemonoImageAndUpdateKemono(c, kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	err = h.generateKemonoDescriptionAndUpdateKemono(c, kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	err = h.generateKemonoStatusAndUpdateKemono(c, kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	err = h.generateKemonoCharacterChipAndUpdateKemono(c, kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	err = h.generateKemonoNameAndUpdateKemono(c, kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	return c.JSON(http.StatusOK, kemonoToGetKemonoResponse(kemono))
+}

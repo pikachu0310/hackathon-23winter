@@ -20,3 +20,8 @@ func (c Concepts) String() string {
 	// ["a", "b", "c"] -> "a,b,c"
 	return strings.Join(c, ",")
 }
+
+func (c Concepts) Text() ConceptsText {
+	// ["a", "b", "c"] -> "a,b,c"
+	return ConceptsText(strings.Join(c, ","))
+}
