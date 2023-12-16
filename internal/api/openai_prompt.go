@@ -456,18 +456,99 @@ func createKemonoNamePrompt(description *string, concepts domains.Concepts, imag
 	return messages, nil
 }
 
-func generateBattleTextPrompt(attacker domains.Kemono, defender domains.Kemono, damage int) {
-	var prompt []string
+func generateBattleTextPrompt(attacker *domains.Kemono, defender *domains.Kemono, damage int) (messages ChatMessages, err error) {
+	/*
+		あなたには、かわいいマスコットやケモノやマモノたちだけが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。
 
-	prompt = append(prompt, fmt.Sprintf("この物語は、ゲームの世界でケモノ達がバトルを繰り広げる世界の中で、二匹のケモノがバトルをしているところを描いた物語です。"))
-	prompt = append(prompt, fmt.Sprintf("いま、「%s」という名前のケモノと「%s」という名前のケモノがバトルをしています。", *attacker.Name, *defender.Name))
-	prompt = append(prompt, fmt.Sprintf(""))
-	prompt = append(prompt, fmt.Sprintf("以下にケモノ「%s」の特徴を載せます。\n名前:「%s」\n能力や特徴:「%s」\nそのケモノを表す要素:「%s」\n最大体力:「%d」\n現在の体力:「%d」\n攻撃力:「%d」\n防御力:「%d」", *attacker.Name, *attacker.Name, *attacker.Description, *attacker.Prompt, *attacker.MaxHp, *attacker.Hp, *attacker.Attack, *attacker.Defense))
-	prompt = append(prompt, fmt.Sprintf(""))
-	prompt = append(prompt, fmt.Sprintf("以下にケモノ「%s」の特徴を載せます。\n名前:「%s」\n能力や特徴:「%s」\nそのケモノを表す要素:「%s」\n最大体力:「%d」\n現在の体力:「%d」\n攻撃力:「%d」\n防御力:「%d」", *defender.Name, *defender.Name, *defender.Description, *defender.Prompt, *defender.MaxHp, *defender.Hp, *defender.Attack, *defender.Defense))
-	prompt = append(prompt, fmt.Sprintf(""))
-	prompt = append(prompt, fmt.Sprintf("これからこの物語では、ケモノ「%s」は、ケモノ「%s」に「%d」のダメージを与えるので、その戦闘シーンをバトル小説のようにお互いが会話をしながらダメージを与える/受ける描写を書いて欲しいです。以下の文章の続きから始めて、ダメージを与える/受ける1ターンの部分の戦闘描写を考えて、生成し、文章全体を出力してください。", *attacker.Name, *defender.Name, damage))
-	fmt.Println(strings.Join(prompt, "\n"))
+		ゲームの世界でケモノ達がバトルを繰り広げる世界の中で、これから2匹のケモノのキャラクターがバトルをするので、その様子を戦闘テキストとして描写して欲しいです。以下に、2匹のケモノのキャラクターの特徴や詳細とステータスパラメーター(最大HPと攻撃力と防御力)を以下に書くので、ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃を行いダメージを与える1ターンの戦闘の様子を描写する戦闘テキストを考えて、100文字程度で出力してください。
+
+		ケモノのキャラクター1匹目の名前は以下の通りです。
+		- ヒバナ
+
+		ケモノのキャラクター1匹目の特徴は以下の通りです。
+		- このキャラクターは、炎属性を持つ森の守り神であり、その生き生きとしたオレンジと赤の色合いが情熱と元気を象徴しています。ふわふわの耳と尾はその愛らしさを際立たせる一方で、目には決意と勇気が宿っており、戦いのときには強い炎を操る力を秘めています。
+
+		ケモノのキャラクター1匹目が持つ概念は以下の通りです。
+		- とてもかわいい
+		- マスコット
+		- 四足歩行
+		- 目が覚めたら森の中だった
+		- ポケモンのようなイメージ
+		- 色は鮮やかめ
+		- 炎属性
+
+		ケモノのキャラクター1匹目のステータスパラメーターは以下の通りです。
+		```
+		MaxHP=70
+		Attack=18
+		Defence=3
+		```
+
+		ケモノのキャラクター2匹目の名前は以下の通りです。
+		- アクアフローラ
+
+		ケモノのキャラクター2匹目の特徴は以下の通りです。
+		- このキャラクターは、やさしい目とふわふわの尾を持つ水属性の森の精霊です。生まれながらにして森を潤し、清らかな水を操る能力を持つ。その鮮やかな色合いは森の生命力を象徴し、可愛らしい外見にもかかわらず、敵には強力な水の魔法で立ち向かう勇敢さを秘めている。
+
+		ケモノのキャラクター2匹目が持つ概念は以下の通りです。
+		- とてもかわいい
+		- マスコット
+		- 四足歩行
+		- 目が覚めたら森の中だった
+		- ポケモンのようなイメージ
+		- 色は鮮やかめ
+		- 水属性
+
+		ケモノのキャラクター2匹目のステータスパラメーターは以下の通りです。
+		```
+		MaxHP=100
+		Attack=10
+		Defence=6
+		```
+
+		与えたダメージの数値は以下の通りです。
+		- 18
+
+		以上の2匹のケモノキャラクターの特徴や詳細から、ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃を行う1ターンの戦闘の様子を描写する戦闘テキストを考えて、200文字程度で出力してください。ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃する様子と、ケモノのキャラクター2匹目が指定した数値のダメージを食らう描写を必ずしてください。
+	*/
+
+	var promptTexts []string
+	promptTexts = append(promptTexts, "あなたには、かわいいマスコットやケモノやマモノたちだけが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。\n\nゲームの世界でケモノ達がバトルを繰り広げる世界の中で、これから2匹のケモノのキャラクターがバトルをするので、その様子を戦闘テキストとして描写して欲しいです。以下に、2匹のケモノのキャラクターの特徴や詳細とステータスパラメーター(最大HPと攻撃力と防御力)を以下に書くので、ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃を行いダメージを与える1ターンの戦闘の様子を描写する戦闘テキストを考えて、100文字程度で出力してください。\n\nケモノのキャラクター1匹目の名前は以下の通りです。")
+	promptTexts = append(promptTexts, fmt.Sprintf("- %s", *attacker.Name))
+	promptTexts = append(promptTexts, "\nケモノのキャラクター1匹目の特徴は以下の通りです。")
+	promptTexts = append(promptTexts, fmt.Sprintf("- %s", *attacker.Description))
+	promptTexts = append(promptTexts, "\nケモノのキャラクター1匹目が持つ概念は以下の通りです。")
+	for _, concept := range attacker.Concepts.Concepts() {
+		promptTexts = append(promptTexts, fmt.Sprintf("- %s", concept))
+	}
+	promptTexts = append(promptTexts, "\nケモノのキャラクター1匹目のステータスパラメーターは以下の通りです。")
+	promptTexts = append(promptTexts, fmt.Sprintf("```\nMaxHP=%d\nAttack=%d\nDefence=%d\n```", *attacker.MaxHp, *attacker.Attack, *attacker.Defense))
+	promptTexts = append(promptTexts, "\nケモノのキャラクター2匹目の名前は以下の通りです。")
+	promptTexts = append(promptTexts, fmt.Sprintf("- %s", *defender.Name))
+	promptTexts = append(promptTexts, "\nケモノのキャラクター2匹目の特徴は以下の通りです。")
+	promptTexts = append(promptTexts, fmt.Sprintf("- %s", *defender.Description))
+	promptTexts = append(promptTexts, "\nケモノのキャラクター2匹目が持つ概念は以下の通りです。")
+	for _, concept := range defender.Concepts.Concepts() {
+		promptTexts = append(promptTexts, fmt.Sprintf("- %s", concept))
+	}
+	promptTexts = append(promptTexts, "\nケモノのキャラクター2匹目のステータスパラメーターは以下の通りです。")
+	promptTexts = append(promptTexts, fmt.Sprintf("```\nMaxHP=%d\nAttack=%d\nDefence=%d\n```", *defender.MaxHp, *defender.Attack, *defender.Defense))
+	promptTexts = append(promptTexts, "\n与えたダメージの数値は以下の通りです。")
+	promptTexts = append(promptTexts, fmt.Sprintf("- %d", damage))
+	promptTexts = append(promptTexts, "\n\n以上の2匹のケモノキャラクターの特徴や詳細から、ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃を行う1ターンの戦闘の様子を描写する戦闘テキストを考えて、200文字程度で出力してください。ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃する様子と、ケモノのキャラクター2匹目が指定した数値のダメージを食らう描写を必ずしてください。")
+	promptText := strings.Join(promptTexts, "\n")
+
+	var userContent MessageContents
+	err = userContent.AddText(promptText)
+	if err != nil {
+		return nil, err
+	}
+	err = messages.AddUserMessageContent(userContent)
+	if err != nil {
+		return nil, err
+	}
+
+	return messages, nil
 }
 
 func generateBreedKemonoPromptPrompt(kemono1 *domains.Kemono, kemono2 *domains.Kemono) (messages ChatMessages, err error) {
@@ -909,7 +990,7 @@ func generateBreedKemonoStatusPrompt(kemono1 *domains.Kemono, kemono2 *domains.K
 		promptTexts = append(promptTexts, fmt.Sprintf("- %s", concept))
 	}
 	promptTexts = append(promptTexts, "\nケモノのキャラクター1匹目のステータスパラメーターは以下の通りです。")
-	promptTexts = append(promptTexts, fmt.Sprintf("```\nMaxHP=%d\nAttack=%d\nDefence=%d\n```", kemono1.MaxHp, kemono1.Attack, kemono1.Defense))
+	promptTexts = append(promptTexts, fmt.Sprintf("```\nMaxHP=%d\nAttack=%d\nDefence=%d\n```", *kemono1.MaxHp, *kemono1.Attack, *kemono1.Defense))
 	promptTexts = append(promptTexts, "\nケモノのキャラクター2匹目の特徴は以下の通りです。")
 	promptTexts = append(promptTexts, fmt.Sprintf("- %s", *kemono2.Description))
 	promptTexts = append(promptTexts, "\nケモノのキャラクター2匹目が持つ概念は以下の通りです。")
@@ -917,7 +998,7 @@ func generateBreedKemonoStatusPrompt(kemono1 *domains.Kemono, kemono2 *domains.K
 		promptTexts = append(promptTexts, fmt.Sprintf("- %s", concept))
 	}
 	promptTexts = append(promptTexts, "\nケモノのキャラクター2匹目のステータスパラメーターは以下の通りです。")
-	promptTexts = append(promptTexts, fmt.Sprintf("```\nMaxHP=%d\nAttack=%d\nDefence=%d\n```", kemono2.MaxHp, kemono2.Attack, kemono2.Defense))
+	promptTexts = append(promptTexts, fmt.Sprintf("```\nMaxHP=%d\nAttack=%d\nDefence=%d\n```", *kemono2.MaxHp, *kemono2.Attack, *kemono2.Defense))
 	promptTexts = append(promptTexts, "\n交配後のケモノのキャラクターの特徴は以下の通りです。")
 	promptTexts = append(promptTexts, fmt.Sprintf("- %s", *kemono3.Description))
 	promptTexts = append(promptTexts, "\n以上の3匹のケモノキャラクターの特徴や詳細から、配合後のモンスターである3枚目の画像のケモノのキャラクターのステータスパラメーター(最大HPと攻撃力と防御力)を考えて出力してください。ケモノのキャラクターのステータスパラメーターを考える際は、3枚目の画像のキャラクターの見た目と、配合前のケモノのキャラクターの詳細情報、特にステータスパラメータを参考にしてください。ケモノのキャラクターのステータスパラメータを出力する際は、先ほど与えたフォーマットに従ってください。基本的に、配合ではステータスパラメーターは配合前の2匹のステータスパラメーターの平均よりも強くなるが、そこまで大幅に強くなることもないことに留意してください。ただし、配合前の二匹のケモノの相性がとても良いときは、大幅に強くなることが出来ます。")

@@ -26,10 +26,11 @@ var (
 	createImageStyle   = openai_api.Vivid
 	createImageUser    = "pikachu0310"
 
-	createChatCompletionModel     openai_api.CreateChatCompletionRequest_Model
-	createChatCompletionMaxTokens = 1024
-	createChatCompletionN         = 1
-	createChatCompletionStream    = false
+	createChatCompletionModelVision openai_api.CreateChatCompletionRequest_Model
+	createChatCompletionModel       openai_api.CreateChatCompletionRequest_Model
+	createChatCompletionMaxTokens   = 1024
+	createChatCompletionN           = 1
+	createChatCompletionStream      = false
 )
 
 type ChatMessage openai_api.ChatCompletionRequestMessage
@@ -46,7 +47,12 @@ func init() {
 		log.Panic(err)
 	}
 
-	err = createChatCompletionModel.FromCreateChatCompletionRequestModel1(openai_api.CreateChatCompletionRequestModel1Gpt4VisionPreview)
+	err = createChatCompletionModelVision.FromCreateChatCompletionRequestModel1(openai_api.CreateChatCompletionRequestModel1Gpt4VisionPreview)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	err = createChatCompletionModel.FromCreateChatCompletionRequestModel1(openai_api.CreateChatCompletionRequestModel1Gpt41106Preview)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -175,9 +181,9 @@ func generateKemonoImage(generateKemonoPromptText *string) ([]byte, error) {
 	return data, nil
 }
 
-func generateTextByGPT4(messages ChatMessages) (*string, error) {
+func generateTextByGPT4Vision(messages ChatMessages) (*string, error) {
 	req := openai_api.CreateChatCompletionRequest{
-		Model:     createChatCompletionModel,
+		Model:     createChatCompletionModelVision,
 		MaxTokens: &createChatCompletionMaxTokens,
 		Messages:  messages,
 		N:         &createChatCompletionN,
