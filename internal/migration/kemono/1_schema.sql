@@ -30,6 +30,8 @@ CREATE TABLE IF NOT EXISTS kemono (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
+ALTER TABLE kemono ADD INDEX owner_id (owner_id);
+ALTER TABLE kemono ADD INDEX field (field);
 -- +goose StatementEnd
 
 -- +goose Down
