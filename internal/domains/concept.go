@@ -21,7 +21,8 @@ func (c Concepts) String() string {
 	return strings.Join(c, ",")
 }
 
-func (c Concepts) Text() ConceptsText {
+func (c Concepts) Text() *ConceptsText {
 	// ["a", "b", "c"] -> "a,b,c"
-	return ConceptsText(strings.Join(c, ","))
+	conceptsText := ConceptsText(c.String())
+	return &conceptsText
 }

@@ -175,7 +175,7 @@ func ParseKemonoStatus(s *string) (*KemonoStatus, error) {
 
 	// 全てのキーがセットされたかチェック
 	if st.MaxHP == nil || st.Attack == nil || st.Defence == nil {
-		return nil, fmt.Errorf("missing status values")
+		return nil, fmt.Errorf("missing status values: %s", *s)
 	}
 
 	return &st, nil
@@ -218,7 +218,7 @@ func ParseKemonoCharacterChip(s *string) (*KemonoCharacterChip, error) {
 
 	// 全てのキーがセットされたかチェック
 	if kc.Kind == nil || kc.Color == nil {
-		return nil, fmt.Errorf("missing character attributes")
+		return nil, fmt.Errorf("missing character attributes: %s", *s)
 	}
 
 	return &kc, nil
@@ -237,6 +237,10 @@ func ParseKemonoConcepts(s *string) (*Concepts, error) {
 			// キャプチャしたグループ（マッチしたサブストリング）を追加します
 			concepts = append(concepts, match[1])
 		}
+	}
+
+	if len(concepts) == 0 {
+		return nil, fmt.Errorf("missing concepts: %s", *s)
 	}
 
 	return &concepts, nil

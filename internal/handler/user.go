@@ -32,7 +32,7 @@ type (
 func (h *Handler) GetUsers(c echo.Context) error {
 	users, err := h.repo.GetUsers(c.Request().Context())
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error(), err.Error()).SetInternal(err)
 	}
 
 	res := make(GetUsersResponse, len(users))
@@ -65,7 +65,7 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		Name: req.Name,
 	})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error(), err.Error()).SetInternal(err)
 	}
 
 	res := CreateUserResponse{
@@ -84,7 +84,7 @@ func (h *Handler) GetUser(c echo.Context) error {
 
 	user, err := h.repo.GetUser(c.Request().Context(), userID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error(), err.Error()).SetInternal(err)
 	}
 
 	res := GetUserResponse{
@@ -106,7 +106,7 @@ func (h *Handler) CreateUserByUserID(c echo.Context) error {
 		ID: userID,
 	})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error(), err.Error()).SetInternal(err)
 	}
 
 	return c.NoContent(http.StatusOK)
@@ -116,7 +116,7 @@ func (h *Handler) CreateUserByUserID(c echo.Context) error {
 func (h *Handler) ResetUsers(c echo.Context) error {
 	err := h.repo.ResetUsers()
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error(), err.Error()).SetInternal(err)
 	}
 
 	return c.NoContent(http.StatusOK)

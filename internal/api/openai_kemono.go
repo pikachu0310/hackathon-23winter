@@ -57,24 +57,24 @@ func GenerateKemonoName(kemono *domains.Kemono) (*string, error) {
 	return generateTextByGPT4(prompt)
 }
 
-func BreedKemonoPrompt(kemono1 *domains.Kemono, kemono2 *domains.Kemono) (*string, error) {
-	prompt, err := generateBreedKemonoPromptPrompt(kemono1, kemono2)
+func BreedKemonoPrompt(kemonoParent1 *domains.Kemono, kemonoParent2 *domains.Kemono) (*string, error) {
+	prompt, err := generateBreedKemonoPromptPrompt(kemonoParent1, kemonoParent2)
 	if err != nil {
 		return nil, err
 	}
 	return generateTextByGPT4(prompt)
 }
 
-func BreedKemonoDescription(kemono1 *domains.Kemono, kemono2 *domains.Kemono, kemono3 *domains.Kemono) (*string, error) {
-	prompt, err := generateBreedKemonoDescriptionPrompt(kemono1, kemono2, kemono3)
+func BreedKemonoDescription(kemonoParent1 *domains.Kemono, kemonoParent2 *domains.Kemono, kemono *domains.Kemono) (*string, error) {
+	prompt, err := generateBreedKemonoDescriptionPrompt(kemonoParent1, kemonoParent2, kemono)
 	if err != nil {
 		return nil, err
 	}
 	return generateTextByGPT4(prompt)
 }
 
-func BreedKemonoStatus(kemono1 *domains.Kemono, kemono2 *domains.Kemono, kemono3 *domains.Kemono) (*domains.KemonoStatus, error) {
-	prompt, err := generateBreedKemonoStatusPrompt(kemono1, kemono2, kemono3)
+func BreedKemonoStatus(kemonoParent1 *domains.Kemono, kemonoParent2 *domains.Kemono, kemono *domains.Kemono) (*domains.KemonoStatus, error) {
+	prompt, err := generateBreedKemonoStatusPrompt(kemonoParent1, kemonoParent2, kemono)
 	if err != nil {
 		return nil, err
 	}
@@ -85,8 +85,8 @@ func BreedKemonoStatus(kemono1 *domains.Kemono, kemono2 *domains.Kemono, kemono3
 	return domains.ParseKemonoStatus(kemonoStatusText)
 }
 
-func BreedKemonoConcepts(kemono1 *domains.Kemono, kemono2 *domains.Kemono, kemono3 *domains.Kemono) (*domains.Concepts, error) {
-	prompt, err := generateBreedKemonoConceptsPrompt(kemono1, kemono2, kemono3)
+func BreedKemonoConcepts(kemonoParent1 *domains.Kemono, kemonoParent2 *domains.Kemono, kemono *domains.Kemono) (*domains.Concepts, error) {
+	prompt, err := generateBreedKemonoConceptsPrompt(kemonoParent1, kemonoParent2, kemono)
 	if err != nil {
 		return nil, err
 	}
