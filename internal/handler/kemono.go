@@ -315,8 +315,8 @@ func (h *Handler) PostBattleByPlayerId(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	if *newKemono.OwnerID == playerID {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid kemono_owner_id\nnew:%s\nold:%s", newKemono.OwnerID, oldKemono.OwnerID)).SetInternal(err)
+	if *newKemono.OwnerID != playerID {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid kemono_owner_id:%s user_id:%s", *newKemono.OwnerID, playerID)).SetInternal(err)
 	}
 
 	newKemono.IsForBattle = domains.NewBool(true)
