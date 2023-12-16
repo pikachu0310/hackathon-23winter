@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/pikachu0310/hackathon-23winter/internal/migration"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/google/uuid"
 )
@@ -11,12 +12,14 @@ import (
 type (
 	// users table
 	User struct {
-		ID   uuid.UUID `db:"id"`
-		Name string    `db:"name"`
+		ID        uuid.UUID `db:"id"`
+		Name      string    `db:"name"`
+		CreatedAt string    `db:"created_at"`
 	}
 
 	CreateUserParams struct {
-		Name string
+		Name     string
+		Password string
 	}
 
 	CreateUserByIDParams struct {
@@ -26,7 +29,7 @@ type (
 
 func (r *Repository) GetUsers(ctx context.Context) ([]*User, error) {
 	users := []*User{}
-	if err := r.db.SelectContext(ctx, &users, "SELECT * FROM users"); err != nil {
+	if err := r.db.SelectContext(ctx, &users, "SELECT (id, name, created_at) FROM users"); err != nil {
 		return nil, fmt.Errorf("select users: %w", err)
 	}
 
@@ -35,8 +38,36 @@ func (r *Repository) GetUsers(ctx context.Context) ([]*User, error) {
 
 func (r *Repository) CreateUser(ctx context.Context, params CreateUserParams) (uuid.UUID, error) {
 	userID := uuid.New()
-	if _, err := r.db.ExecContext(ctx, "INSERT INTO users (id, name) VALUES (?, ?)", userID, params.Name); err != nil {
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(params.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("hash password: %w", err)
+	}
+
+	if _, err := r.db.ExecContext(ctx, "INSERT INTO users (id, name, password) VALUES (?, ?, ?)", userID, params.Name, hashedPassword); err != nil {
 		return uuid.Nil, fmt.Errorf("insert user: %w", err)
+	}
+
+	return userID, nil
+}
+
+func (r *Repository) GetHashedPassword(ctx context.Context, userName string) ([]byte, error) {
+	var storedPassword string
+
+	err := r.db.QueryRowContext(ctx, "SELECT password FROM users WHERE name = ?", userName).Scan(&storedPassword)
+	if err != nil {
+		return nil, fmt.Errorf("select password: %w", err)
+	}
+
+	return []byte(storedPassword), nil
+}
+
+func (r *Repository) GetUserID(ctx context.Context, userName string) (uuid.UUID, error) {
+	var userID uuid.UUID
+
+	err := r.db.QueryRowContext(ctx, "SELECT id FROM users WHERE name = ?", userName).Scan(&userID)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("select id: %w", err)
 	}
 
 	return userID, nil

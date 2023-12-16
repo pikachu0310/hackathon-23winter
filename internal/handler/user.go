@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"github.com/pikachu0310/hackathon-23winter/internal/repository"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 
 	vd "github.com/go-ozzo/ozzo-validation"
@@ -15,12 +16,23 @@ type (
 	GetUsersResponse []GetUserResponse
 
 	GetUserResponse struct {
-		ID   uuid.UUID `json:"id"`
-		Name string    `json:"name"`
+		ID        uuid.UUID `json:"id"`
+		Name      string    `json:"name"`
+		CreatedAt string    `json:"created_at"`
 	}
 
 	CreateUserRequest struct {
-		Name string `json:"name"`
+		Name     string `json:"name"`
+		Password string `json:"password"`
+	}
+
+	LoginUserRequest struct {
+		Name     string `json:"name"`
+		Password string `json:"password"`
+	}
+
+	LoginUserResponse struct {
+		ID uuid.UUID `json:"id"`
 	}
 
 	CreateUserResponse struct {
@@ -38,8 +50,9 @@ func (h *Handler) GetUsers(c echo.Context) error {
 	res := make(GetUsersResponse, len(users))
 	for i, user := range users {
 		res[i] = GetUserResponse{
-			ID:   user.ID,
-			Name: user.Name,
+			ID:        user.ID,
+			Name:      user.Name,
+			CreatedAt: user.CreatedAt,
 		}
 	}
 
@@ -47,22 +60,22 @@ func (h *Handler) GetUsers(c echo.Context) error {
 }
 
 // POST /api/v1/users
-func (h *Handler) CreateUser(c echo.Context) error {
+func (h *Handler) Signup(c echo.Context) error {
 	req := new(CreateUserRequest)
-	if err := c.Bind(req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body").SetInternal(err)
-	}
-
+	req.Name = c.FormValue("name")
+	req.Password = c.FormValue("password")
 	err := vd.ValidateStruct(
 		req,
 		vd.Field(&req.Name, vd.Required),
+		vd.Field(&req.Password, vd.Required),
 	)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err)).SetInternal(err)
 	}
 
 	userID, err := h.repo.CreateUser(c.Request().Context(), repository.CreateUserParams{
-		Name: req.Name,
+		Name:     req.Name,
+		Password: req.Password,
 	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error(), err.Error()).SetInternal(err)
@@ -73,6 +86,37 @@ func (h *Handler) CreateUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, res)
+}
+
+// POST /api/v1/users/login
+func (h *Handler) Login(c echo.Context) error {
+	req := new(CreateUserRequest)
+	req.Name = c.FormValue("name")
+	req.Password = c.FormValue("password")
+	err := vd.ValidateStruct(
+		req,
+		vd.Field(&req.Name, vd.Required),
+		vd.Field(&req.Password, vd.Required),
+	)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err)).SetInternal(err)
+	}
+	password, err := h.repo.GetHashedPassword(c.Request().Context(), req.Name)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid username").SetInternal(err)
+	}
+	err = bcrypt.CompareHashAndPassword(password, []byte(req.Password))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid password").SetInternal(err)
+	}
+	id, err := h.repo.GetUserID(c.Request().Context(), req.Name)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid username").SetInternal(err)
+	}
+
+	return c.JSON(http.StatusOK, LoginUserResponse{
+		ID: id,
+	})
 }
 
 // GET /api/v1/users/:userID
@@ -88,8 +132,9 @@ func (h *Handler) GetUser(c echo.Context) error {
 	}
 
 	res := GetUserResponse{
-		ID:   user.ID,
-		Name: user.Name,
+		ID:        user.ID,
+		Name:      user.Name,
+		CreatedAt: user.CreatedAt,
 	}
 
 	return c.JSON(http.StatusOK, res)

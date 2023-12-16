@@ -299,6 +299,9 @@ func (h *Handler) PostBattleByPlayerId(c echo.Context) error {
 	}
 
 	newKemonoForBattleId, err := uuid.Parse(c.FormValue("kemono_id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid kemono_id").SetInternal(err)
+	}
 	newKemono, err := h.repo.GetKemono(c.Request().Context(), newKemonoForBattleId)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)

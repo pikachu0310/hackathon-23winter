@@ -27,7 +27,8 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 	userAPI := api.Group("/users")
 	{
 		userAPI.GET("", h.GetUsers)
-		userAPI.POST("", h.CreateUser)
+		userAPI.POST("/login", h.Login)
+		userAPI.POST("/signup", h.Signup)
 		userAPI.POST("/:userID", h.CreateUserByUserID)
 		userAPI.GET("/:userID", h.GetUser)
 
