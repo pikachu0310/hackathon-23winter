@@ -456,7 +456,7 @@ func createKemonoNamePrompt(description *string, concepts domains.Concepts, imag
 	return messages, nil
 }
 
-func generateBreedKemonoPromptPrompt(kemono1 domains.Kemono, kemono2 domains.Kemono) (messages ChatMessages, err error) {
+func generateBreedKemonoPromptPrompt(kemono1 *domains.Kemono, kemono2 *domains.Kemono) (messages ChatMessages, err error) {
 	/*
 		あなたには、かわいいマスコットやケモノやマモノたちが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。
 
@@ -616,7 +616,7 @@ func generateBreedKemonoPromptPrompt(kemono1 domains.Kemono, kemono2 domains.Kem
 	return messages, nil
 }
 
-func generateBreedKemonoDescriptionPrompt(kemono1 domains.Kemono, kemono2 domains.Kemono, kemono3 domains.Kemono) (messages ChatMessages, err error) {
+func generateBreedKemonoDescriptionPrompt(kemono1 *domains.Kemono, kemono2 *domains.Kemono, kemono3 *domains.Kemono) (messages ChatMessages, err error) {
 	/*
 		あなたには、かわいいマスコットやケモノやマモノたちだけが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。
 
@@ -746,7 +746,7 @@ func generateBreedKemonoDescriptionPrompt(kemono1 domains.Kemono, kemono2 domain
 	return messages, nil
 }
 
-func generateBreedKemonoStatusPrompt(kemono1 domains.Kemono, kemono2 domains.Kemono, kemono3 domains.Kemono) (messages ChatMessages, err error) {
+func generateBreedKemonoStatusPrompt(kemono1 *domains.Kemono, kemono2 *domains.Kemono, kemono3 *domains.Kemono) (messages ChatMessages, err error) {
 	/*
 		あなたには、かわいいマスコットやケモノやマモノたちだけが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。
 
@@ -929,6 +929,139 @@ func generateBreedKemonoStatusPrompt(kemono1 domains.Kemono, kemono2 domains.Kem
 	err = messages.AddUserMessageContent(userContent2)
 	if err != nil {
 		return
+	}
+
+	return messages, nil
+}
+
+func generateBreedKemonoConceptsPrompt(kemono1 *domains.Kemono, kemono2 *domains.Kemono, kemono3 *domains.Kemono) (messages ChatMessages, err error) {
+	/*
+		あなたには、かわいいマスコットやケモノやマモノたちだけが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。
+
+		1匹目のケモノキャラクターと2匹目のケモノキャラクターを配合させ、新しいケモノキャラクターを生成しました。提供した画像は、配合されて新しくできたケモノのキャラクターの画像です。配合前のケモノや、配合後のケモノの画像や特徴から、新しいケモノキャラクターの持つ概念を考えて出力して欲しいです。概念は最大10個で、以下のような単語や短い文で表されます。以下は概念の例です。
+		- かわいい
+		- マスコット
+		- 四足歩行
+		- ポケモン
+		- 色が鮮やか
+		- 炎属性
+		- オレンジ色の毛皮
+		- スライム
+		- 丸呑み
+		- 触手を持つ
+		- 毒をもつ
+
+		これらを参考にして、配合後のケモノの画像と、以下に書く配合前のケモノの概念と配合後のケモノの特徴から、配合後のケモノの概念を考えて、最大10個で出力してください。
+
+		配合前のケモノのキャラクター1匹目が持っていた概念は以下の通りです。
+		- とてもかわいい
+		- マスコット
+		- 四足歩行
+		- 森の中で生まれた
+		- 色が鮮やか
+		- 水属性
+
+		配合前のケモノのキャラクター2匹目が持っていた概念は以下の通りです。
+		- とてもかわいい
+		- マスコット
+		- 四足歩行
+		- 森の中で生まれた
+		- ポケモンのような見た目
+		- 美しい赤
+		- 炎属性
+
+		配合後のケモノの特徴は以下の通りです。
+		- この新たなケモノキャラクターは、水と炎の属性を併せ持つ森の守護者として生息しています。そのふわふわの毛並みは水の精霊の柔らかさを受け継ぎ、鮮やかな色彩は森の生命力と情熱を象徴しています。目には優しさと決意が宿り、敵には水と炎の魔法で立ち向かう力を秘めており、その勇敢さは森を守る戦士の証です。四足歩行で、朝目覚めれば森の中におり、ポケモンのような可愛らしさでありながら、戦いではその力を存分に発揮する生き物です。
+
+		以上を参考にして、配合前のケモノの画像とケモノの概念と、配合後のケモノの特徴から、配合後のケモノの概念を考えて、日本語で最大10個出力してください。概念の説明は要りません。概念だけを出力してください。
+	*/
+	/*
+		- かわいい
+		- マスコット
+		- 四足歩行
+		- ポケモン
+		- 色が鮮やか
+		- 炎属性
+		- オレンジ色の毛皮
+		- スライム
+		- 丸呑み
+		- 触手を持つ
+		- 毒をもつ
+	*/
+	/*
+		完璧です！また別のケモノキャラクターの情報を送るので、まったく同じようにして、提供した画像を読み込んで、配合前のケモノの画像とケモノの概念と、配合後のケモノの特徴から、配合後のケモノの概念を考えて、日本語で最大10個出力してください。先ほどと全く同じように出力してください。
+
+		1匹目のケモノキャラクターと2匹目のケモノキャラクターを配合させ、新しいケモノキャラクターを生成しました。提供した画像は、配合されて新しくできたケモノのキャラクターの画像です。配合前のケモノや、配合後のケモノの画像や特徴から、新しいケモノキャラクターの持つ概念を考えて出力して欲しいです。概念は最大10個で、以下のような単語や短い文で表されます。以下は概念の例です。
+		- かわいい
+		- マスコット
+		- 四足歩行
+		- ポケモン
+		- 色が鮮やか
+		- 炎属性
+		- オレンジ色の毛皮
+		- スライム
+		- 丸呑み
+		- 触手を持つ
+		- 毒をもつ
+
+		これらを参考にして、配合後のケモノの画像と、以下に書く配合前のケモノの概念と配合後のケモノの特徴から、配合後のケモノの概念を考えて、最大10個で出力してください。
+
+		配合前のケモノのキャラクター1匹目が持っていた概念は以下の通りです。
+		- %s
+
+		配合前のケモノのキャラクター2匹目が持っていた概念は以下の通りです。
+		- %s
+
+		配合後のケモノの特徴は以下の通りです。
+		- %s
+
+		以上を参考にして、配合前のケモノの画像とケモノの概念と、配合後のケモノの特徴から、配合後のケモノの概念を考えて、日本語で最大10個出力してください。概念の説明は要りません。概念だけを出力してください。先ほどと全く同じように出力してください。
+	*/
+
+	var userContent1 MessageContents
+	err = userContent1.AddImage(images.TestKemonoImageAquaFire)
+	if err != nil {
+		return
+	}
+	err = userContent1.AddText("あなたには、かわいいマスコットやケモノやマモノたちだけが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。\n\n1匹目のケモノキャラクターと2匹目のケモノキャラクターを配合させ、新しいケモノキャラクターを生成しました。提供した画像は、配合されて新しくできたケモノのキャラクターの画像です。配合前のケモノや、配合後のケモノの画像や特徴から、新しいケモノキャラクターの持つ概念を考えて出力して欲しいです。概念は最大10個で、以下のような単語や短い文で表されます。以下は概念の例です。\n- かわいい\n- マスコット\n- 四足歩行\n- ポケモン\n- 色が鮮やか\n- 炎属性\n- オレンジ色の毛皮\n- スライム\n- 丸呑み\n- 触手を持つ\n- 毒をもつ\n\nこれらを参考にして、配合後のケモノの画像と、以下に書く配合前のケモノの概念と配合後のケモノの特徴から、配合後のケモノの概念を考えて、最大10個で出力してください。\n\n配合前のケモノのキャラクター1匹目が持っていた概念は以下の通りです。\n- とてもかわいい\n- マスコット\n- 四足歩行\n- 森の中で生まれた\n- 色が鮮やか\n- 水属性\n\n配合前のケモノのキャラクター2匹目が持っていた概念は以下の通りです。\n- とてもかわいい\n- マスコット\n- 四足歩行\n- 森の中で生まれた\n- ポケモンのような見た目\n- 美しい赤\n- 炎属性\n\n配合後のケモノの特徴は以下の通りです。\n- この新たなケモノキャラクターは、水と炎の属性を併せ持つ森の守護者として生息しています。そのふわふわの毛並みは水の精霊の柔らかさを受け継ぎ、鮮やかな色彩は森の生命力と情熱を象徴しています。目には優しさと決意が宿り、敵には水と炎の魔法で立ち向かう力を秘めており、その勇敢さは森を守る戦士の証です。四足歩行で、朝目覚めれば森の中におり、ポケモンのような可愛らしさでありながら、戦いではその力を存分に発揮する生き物です。\n\n以上を参考にして、配合前のケモノの画像とケモノの概念と、配合後のケモノの特徴から、配合後のケモノの概念を考えて、日本語で最大10個出力してください。概念の説明は要りません。概念だけを出力してください。")
+	if err != nil {
+		return
+	}
+	err = messages.AddUserMessageContent(userContent1)
+	if err != nil {
+		return
+	}
+
+	err = messages.AddAssistantMessageContent("- かわいい\n- マスコット\n- 四足歩行\n- ポケモン\n- 色が鮮やか\n- 炎属性\n- オレンジ色の毛皮\n- スライム\n- 丸呑み\n- 触手を持つ\n- 毒をもつ")
+	if err != nil {
+		return nil, err
+	}
+
+	var promptTexts []string
+	promptTexts = append(promptTexts, "完璧です！また別のケモノキャラクターの情報を送るので、まったく同じようにして、提供した画像を読み込んで、配合前のケモノの画像とケモノの概念と、配合後のケモノの特徴から、配合後のケモノの概念を考えて、日本語で最大10個出力してください。先ほどと全く同じように出力してください。\n\n1匹目のケモノキャラクターと2匹目のケモノキャラクターを配合させ、新しいケモノキャラクターを生成しました。提供した画像は、配合されて新しくできたケモノのキャラクターの画像です。配合前のケモノや、配合後のケモノの画像や特徴から、新しいケモノキャラクターの持つ概念を考えて出力して欲しいです。概念は最大10個で、以下のような単語や短い文で表されます。以下は概念の例です。\n- かわいい\n- マスコット\n- 四足歩行\n- ポケモン\n- 色が鮮やか\n- 炎属性\n- オレンジ色の毛皮\n- スライム\n- 丸呑み\n- 触手を持つ\n- 毒をもつ\n\nこれらを参考にして、配合後のケモノの画像と、以下に書く配合前のケモノの概念と配合後のケモノの特徴から、配合後のケモノの概念を考えて、最大10個で出力してください。\n\n配合前のケモノのキャラクター1匹目が持っていた概念は以下の通りです。")
+	for _, concept := range kemono1.Concepts.Concepts() {
+		promptTexts = append(promptTexts, fmt.Sprintf("- %s", concept))
+	}
+	promptTexts = append(promptTexts, "\n配合前のケモノのキャラクター2匹目が持っていた概念は以下の通りです。")
+	for _, concept := range kemono2.Concepts.Concepts() {
+		promptTexts = append(promptTexts, fmt.Sprintf("- %s", concept))
+	}
+	promptTexts = append(promptTexts, "\n配合後のケモノの特徴は以下の通りです。")
+	promptTexts = append(promptTexts, fmt.Sprintf("- %s", *kemono3.Description))
+	promptTexts = append(promptTexts, "\n以上を参考にして、配合前のケモノの画像とケモノの概念と、配合後のケモノの特徴から、配合後のケモノの概念を考えて、日本語で最大10個出力してください。概念の説明は要りません。概念だけを出力してください。先ほどと全く同じように出力してください。")
+
+	var userContent2 MessageContents
+	err = userContent2.AddImage(kemono3.Image)
+	if err != nil {
+		return
+	}
+	err = userContent2.AddText(strings.Join(promptTexts, "\n"))
+	if err != nil {
+		return
+	}
+	err = messages.AddUserMessageContent(userContent2)
+	if err != nil {
+		return nil, err
 	}
 
 	return messages, nil

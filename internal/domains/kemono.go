@@ -3,6 +3,7 @@ package domains
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -221,4 +222,22 @@ func ParseKemonoCharacterChip(s *string) (*KemonoCharacterChip, error) {
 	}
 
 	return &kc, nil
+}
+
+func ParseKemonoConcepts(s *string) (*Concepts, error) {
+	// 求めるパターンに合う正規表現を定義します
+	re := regexp.MustCompile(`- ([^\n]+)`)
+
+	// 正規表現を使ってマッチする部分を全て見つけます
+	matches := re.FindAllStringSubmatch(*s, -1)
+
+	var concepts Concepts
+	for _, match := range matches {
+		if len(match) > 1 {
+			// キャプチャしたグループ（マッチしたサブストリング）を追加します
+			concepts = append(concepts, match[1])
+		}
+	}
+
+	return &concepts, nil
 }

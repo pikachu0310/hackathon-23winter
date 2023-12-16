@@ -33,7 +33,7 @@ func (h *Handler) generateKemonoImageAndUpdateKemono(c echo.Context, kemonoID uu
 		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
 	}
 
-	image, err := api.GenerateKemonoImage(kemono.Prompt)
+	image, err := api.GenerateKemonoImage(kemono)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError).SetInternal(err)
 	}

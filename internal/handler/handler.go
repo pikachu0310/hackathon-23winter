@@ -70,15 +70,15 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		battleAPI.POST("/:battle_id", h.PostBattleDamage)
 	}
 
-	// test API
-	testAPI := api.Group("/test")
-	{
-		testAPI.GET("", h.Test)
-		testAPI.GET("/2", h.Test2)
-		testAPI.GET("/3", h.Test3)
-		testAPI.GET("/4", h.Test4)
-		testAPI.GET("/5", h.Test5)
-	}
+	//// test API
+	//testAPI := api.Group("/test")
+	//{
+	//	testAPI.GET("", h.Test)
+	//	testAPI.GET("/2", h.Test2)
+	//	testAPI.GET("/3", h.Test3)
+	//	testAPI.GET("/4", h.Test4)
+	//	testAPI.GET("/5", h.Test5)
+	//}
 
 	// reset API
 	resetAPI := api.Group("/reset")

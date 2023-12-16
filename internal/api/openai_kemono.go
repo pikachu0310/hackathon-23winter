@@ -9,7 +9,11 @@ func GenerateKemonoPrompt(kemono *domains.Kemono) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	return GenerateTextByGPT4(prompt)
+	return generateTextByGPT4(prompt)
+}
+
+func GenerateKemonoImage(kemono *domains.Kemono) ([]byte, error) {
+	return generateKemonoImage(kemono.Prompt)
 }
 
 func GenerateKemonoDescription(kemono *domains.Kemono) (*string, error) {
@@ -17,7 +21,7 @@ func GenerateKemonoDescription(kemono *domains.Kemono) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	return GenerateTextByGPT4(prompt)
+	return generateTextByGPT4(prompt)
 }
 
 func GenerateKemonoStatus(kemono *domains.Kemono) (*domains.KemonoStatus, error) {
@@ -25,7 +29,7 @@ func GenerateKemonoStatus(kemono *domains.Kemono) (*domains.KemonoStatus, error)
 	if err != nil {
 		return nil, err
 	}
-	kemonoStatusText, err := GenerateTextByGPT4(prompt)
+	kemonoStatusText, err := generateTextByGPT4(prompt)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +41,7 @@ func GenerateKemonoCharacterChip(kemono *domains.Kemono) (*domains.KemonoCharact
 	if err != nil {
 		return nil, err
 	}
-	kemonoCharacterChipText, err := GenerateTextByGPT4(prompt)
+	kemonoCharacterChipText, err := generateTextByGPT4(prompt)
 	if err != nil {
 		return nil, err
 	}
@@ -50,5 +54,45 @@ func GenerateKemonoName(kemono *domains.Kemono) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	return GenerateTextByGPT4(prompt)
+	return generateTextByGPT4(prompt)
+}
+
+func BreedKemonoPrompt(kemono1 *domains.Kemono, kemono2 *domains.Kemono) (*string, error) {
+	prompt, err := generateBreedKemonoPromptPrompt(kemono1, kemono2)
+	if err != nil {
+		return nil, err
+	}
+	return generateTextByGPT4(prompt)
+}
+
+func BreedKemonoDescription(kemono1 *domains.Kemono, kemono2 *domains.Kemono, kemono3 *domains.Kemono) (*string, error) {
+	prompt, err := generateBreedKemonoDescriptionPrompt(kemono1, kemono2, kemono3)
+	if err != nil {
+		return nil, err
+	}
+	return generateTextByGPT4(prompt)
+}
+
+func BreedKemonoStatus(kemono1 *domains.Kemono, kemono2 *domains.Kemono, kemono3 *domains.Kemono) (*domains.KemonoStatus, error) {
+	prompt, err := generateBreedKemonoStatusPrompt(kemono1, kemono2, kemono3)
+	if err != nil {
+		return nil, err
+	}
+	kemonoStatusText, err := generateTextByGPT4(prompt)
+	if err != nil {
+		return nil, err
+	}
+	return domains.ParseKemonoStatus(kemonoStatusText)
+}
+
+func BreedKemonoConcepts(kemono1 *domains.Kemono, kemono2 *domains.Kemono, kemono3 *domains.Kemono) (*domains.Concepts, error) {
+	prompt, err := generateBreedKemonoConceptsPrompt(kemono1, kemono2, kemono3)
+	if err != nil {
+		return nil, err
+	}
+	kemonoConceptsText, err := generateTextByGPT4(prompt)
+	if err != nil {
+		return nil, err
+	}
+	return domains.ParseKemonoConcepts(kemonoConceptsText)
 }

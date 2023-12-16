@@ -146,7 +146,7 @@ func addAPIKeyToRequest(apiKey string) openai.RequestEditorFn {
 	}
 }
 
-func GenerateKemonoImage(generateKemonoPromptText *string) ([]byte, error) {
+func generateKemonoImage(generateKemonoPromptText *string) ([]byte, error) {
 	req := openai_api.CreateImageRequest{
 		Model:          &createImageModel,
 		N:              &createImageN,
@@ -175,7 +175,7 @@ func GenerateKemonoImage(generateKemonoPromptText *string) ([]byte, error) {
 	return data, nil
 }
 
-func GenerateTextByGPT4(messages ChatMessages) (*string, error) {
+func generateTextByGPT4(messages ChatMessages) (*string, error) {
 	req := openai_api.CreateChatCompletionRequest{
 		Model:     createChatCompletionModel,
 		MaxTokens: &createChatCompletionMaxTokens,
