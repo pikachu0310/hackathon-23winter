@@ -954,12 +954,9 @@ func (h *Handler) CatchKemono(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusConflict, "kemono is player")
 	}
 
-	t := true
-	f := false
-
-	kemono.IsOwned = &t
+	kemono.IsOwned = domains.NewBool(true)
 	kemono.OwnerID = &playerId
-	kemono.IsInField = &f
+	kemono.IsInField = domains.NewBool(false)
 
 	if err = h.repo.UpdateKemono(c.Request().Context(), kemono); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
@@ -1009,9 +1006,6 @@ func (h *Handler) GenerateKemono(c echo.Context) error {
 	}
 	conceptsText := domains.ConceptsText(conceptsString)
 
-	t := true
-	f := false
-	uuidNil := uuid.Nil
 	kemonoID, err := h.repo.CreateKemono(c.Request().Context(), &domains.Kemono{
 		ID:          nil,
 		Image:       nil,
@@ -1021,20 +1015,20 @@ func (h *Handler) GenerateKemono(c echo.Context) error {
 		Description: nil,
 		Kind:        nil,
 		Color:       nil,
-		IsPlayer:    &f,
-		IsForBattle: &f,
-		IsOwned:     &t,
+		IsPlayer:    domains.NewBool(false),
+		IsForBattle: domains.NewBool(false),
+		IsOwned:     domains.NewBool(true),
 		OwnerID:     &userID,
-		IsInField:   &f,
-		IsBoss:      &f,
+		IsInField:   domains.NewBool(false),
+		IsBoss:      domains.NewBool(false),
 		Field:       nil,
 		X:           nil,
 		Y:           nil,
-		HasParent:   &f,
-		Parent1ID:   &uuidNil,
-		Parent2ID:   &uuidNil,
-		HasChild:    &f,
-		ChildID:     &uuidNil,
+		HasParent:   domains.NewBool(false),
+		Parent1ID:   domains.UuidNil(),
+		Parent2ID:   domains.UuidNil(),
+		HasChild:    domains.NewBool(false),
+		ChildID:     domains.UuidNil(),
 		MaxHp:       nil,
 		Hp:          nil,
 		Attack:      nil,
@@ -1134,9 +1128,6 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
-	t := true
-	f := false
-	uuidNil := uuid.Nil
 	kemonoID, err := h.repo.CreateKemono(c.Request().Context(), &domains.Kemono{
 		ID:          nil,
 		Image:       nil,
@@ -1146,20 +1137,20 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 		Description: nil,
 		Kind:        nil,
 		Color:       nil,
-		IsPlayer:    &f,
-		IsForBattle: &f,
-		IsOwned:     &f,
-		OwnerID:     &uuidNil,
-		IsInField:   &f,
-		IsBoss:      &f,
+		IsPlayer:    domains.NewBool(false),
+		IsForBattle: domains.NewBool(false),
+		IsOwned:     domains.NewBool(false),
+		OwnerID:     domains.UuidNil(),
+		IsInField:   domains.NewBool(false),
+		IsBoss:      domains.NewBool(false),
 		Field:       nil,
 		X:           nil,
 		Y:           nil,
-		HasParent:   &t,
+		HasParent:   domains.NewBool(true),
 		Parent1ID:   kemonoParent1.ID,
 		Parent2ID:   kemonoParent2.ID,
-		HasChild:    &f,
-		ChildID:     &uuidNil,
+		HasChild:    domains.NewBool(false),
+		ChildID:     domains.UuidNil(),
 		MaxHp:       nil,
 		Hp:          nil,
 		Attack:      nil,
@@ -1239,7 +1230,7 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 	isPlayer := *kemonoParent1.IsPlayer || *kemonoParent2.IsPlayer
 	isForBattle := *kemonoParent1.IsForBattle || *kemonoParent2.IsForBattle
 	kemono.OwnerID = kemonoParent1.OwnerID
-	kemono.IsOwned = &t
+	kemono.IsOwned = domains.NewBool(true)
 	kemono.IsForBattle = &isForBattle
 	kemono.IsPlayer = &isPlayer
 	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
@@ -1247,16 +1238,136 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
-	kemonoParent1.HasChild = &t
+	kemonoParent1.HasChild = domains.NewBool(true)
 	kemonoParent1.ChildID = &kemonoID
 	err = h.repo.UpdateKemono(c.Request().Context(), kemonoParent1)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
-	kemonoParent2.HasChild = &t
+	kemonoParent2.HasChild = domains.NewBool(true)
 	kemonoParent2.ChildID = &kemonoID
 	err = h.repo.UpdateKemono(c.Request().Context(), kemonoParent2)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	return c.JSON(http.StatusOK, kemonoToGetKemonoResponse(kemono))
+}
+
+// POST /api/v1/fields/:fieldID/kemonos/generate
+func (h *Handler) GenerateFieldKemono(c echo.Context) error {
+	startTime := time.Now()
+
+	fieldID, err := strconv.Atoi(c.Param("fieldID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid fieldID").SetInternal(err)
+	}
+
+	fieldType := domains.FieldIdToFieldType(fieldID)
+	x, y := domains.FieldTypeToPosition(fieldType)
+	var concepts domains.Concepts
+	concepts.AddConcept(domains.FieldTypeToConcepts1(fieldType).SelectConceptByRandom())
+	concepts.AddConcept(domains.FieldTypeToConcepts2(fieldType).SelectConceptByRandom())
+	concepts.AddConcept(domains.FieldTypeToConcepts2(fieldType).SelectConceptByRandom())
+	concepts.AddConcept(domains.FieldTypeToConcepts2(fieldType).SelectConceptByRandom())
+	concepts.AddConcept("とてもかわいい")
+	concepts.AddConcept("マスコット")
+	concepts.AddConcept("鮮やかな色")
+
+	kemonoID, err := h.repo.CreateKemono(c.Request().Context(), &domains.Kemono{
+		ID:          nil,
+		Image:       nil,
+		Prompt:      nil,
+		Concepts:    concepts.Text(),
+		Name:        nil,
+		Description: nil,
+		Kind:        nil,
+		Color:       nil,
+		IsPlayer:    domains.NewBool(false),
+		IsForBattle: domains.NewBool(false),
+		IsOwned:     domains.NewBool(false),
+		OwnerID:     domains.UuidNil(),
+		IsInField:   domains.NewBool(true),
+		IsBoss:      domains.NewBool(false),
+		Field:       &fieldID,
+		X:           &x,
+		Y:           &y,
+		HasParent:   domains.NewBool(false),
+		Parent1ID:   domains.UuidNil(),
+		Parent2ID:   domains.UuidNil(),
+		HasChild:    domains.NewBool(false),
+		ChildID:     domains.UuidNil(),
+		MaxHp:       nil,
+		Hp:          nil,
+		Attack:      nil,
+		Defense:     nil,
+		CreatedAt:   nil,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	// 4s 3s 4s
+	err = h.generateKemonoPromptAndUpdateKemono(c, kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	fmt.Println(time.Now().Sub(startTime).Seconds())
+
+	// 13s 25s 15s
+	err = h.generateKemonoImageAndUpdateKemono(c, kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	fmt.Println(time.Now().Sub(startTime).Seconds())
+
+	// 16s 15s 31s
+	err = h.generateKemonoDescriptionAndUpdateKemono(c, kemonoID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	fmt.Println(time.Now().Sub(startTime).Seconds())
+
+	// 11s 25s
+	var eg errgroup.Group
+	eg.Go(func() error {
+		// 5s
+		err = h.generateKemonoStatusAndUpdateKemono(c, kemonoID)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+		}
+		return nil
+	})
+
+	eg.Go(func() error {
+		// 17s
+		err = h.generateKemonoCharacterChipAndUpdateKemono(c, kemonoID)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+		}
+		return nil
+	})
+
+	eg.Go(func() error {
+		// 7s
+		err = h.generateKemonoNameAndUpdateKemono(c, kemonoID)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+		}
+		return nil
+	})
+
+	err = eg.Wait()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+	fmt.Println(time.Now().Sub(startTime).Seconds())
+
+	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}

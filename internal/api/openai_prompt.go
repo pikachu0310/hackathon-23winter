@@ -456,6 +456,20 @@ func createKemonoNamePrompt(description *string, concepts domains.Concepts, imag
 	return messages, nil
 }
 
+func generateBattleTextPrompt(attacker domains.Kemono, defender domains.Kemono, damage int) {
+	var prompt []string
+
+	prompt = append(prompt, fmt.Sprintf("この物語は、ゲームの世界でケモノ達がバトルを繰り広げる世界の中で、二匹のケモノがバトルをしているところを描いた物語です。"))
+	prompt = append(prompt, fmt.Sprintf("いま、「%s」という名前のケモノと「%s」という名前のケモノがバトルをしています。", *attacker.Name, *defender.Name))
+	prompt = append(prompt, fmt.Sprintf(""))
+	prompt = append(prompt, fmt.Sprintf("以下にケモノ「%s」の特徴を載せます。\n名前:「%s」\n能力や特徴:「%s」\nそのケモノを表す要素:「%s」\n最大体力:「%d」\n現在の体力:「%d」\n攻撃力:「%d」\n防御力:「%d」", *attacker.Name, *attacker.Name, *attacker.Description, *attacker.Prompt, *attacker.MaxHp, *attacker.Hp, *attacker.Attack, *attacker.Defense))
+	prompt = append(prompt, fmt.Sprintf(""))
+	prompt = append(prompt, fmt.Sprintf("以下にケモノ「%s」の特徴を載せます。\n名前:「%s」\n能力や特徴:「%s」\nそのケモノを表す要素:「%s」\n最大体力:「%d」\n現在の体力:「%d」\n攻撃力:「%d」\n防御力:「%d」", *defender.Name, *defender.Name, *defender.Description, *defender.Prompt, *defender.MaxHp, *defender.Hp, *defender.Attack, *defender.Defense))
+	prompt = append(prompt, fmt.Sprintf(""))
+	prompt = append(prompt, fmt.Sprintf("これからこの物語では、ケモノ「%s」は、ケモノ「%s」に「%d」のダメージを与えるので、その戦闘シーンをバトル小説のようにお互いが会話をしながらダメージを与える/受ける描写を書いて欲しいです。以下の文章の続きから始めて、ダメージを与える/受ける1ターンの部分の戦闘描写を考えて、生成し、文章全体を出力してください。", *attacker.Name, *defender.Name, damage))
+	fmt.Println(strings.Join(prompt, "\n"))
+}
+
 func generateBreedKemonoPromptPrompt(kemono1 *domains.Kemono, kemono2 *domains.Kemono) (messages ChatMessages, err error) {
 	/*
 		あなたには、かわいいマスコットやケモノやマモノたちが生息する世界観のゲームの、ゲーム内システムを担当してもらいます。

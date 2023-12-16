@@ -249,3 +249,6 @@ func ParseKemonoConcepts(s *string) (*Concepts, error) {
 func NewBool(b bool) *bool {
 	return &b
 }
+func UuidNil() *uuid.UUID {
+	return &uuid.Nil
+}

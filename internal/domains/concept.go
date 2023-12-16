@@ -1,6 +1,9 @@
 package domains
 
-import "strings"
+import (
+	"math/rand"
+	"strings"
+)
 
 type (
 	ConceptsText string
@@ -25,4 +28,15 @@ func (c Concepts) Text() *ConceptsText {
 	// ["a", "b", "c"] -> "a,b,c"
 	conceptsText := ConceptsText(c.String())
 	return &conceptsText
+}
+
+func (c Concepts) SelectConceptByRandom() string {
+	if len(c) == 0 {
+		return ""
+	}
+	return c[rand.Intn(len(c))]
+}
+
+func (c Concepts) AddConcept(concept string) Concepts {
+	return append(c, concept)
 }
