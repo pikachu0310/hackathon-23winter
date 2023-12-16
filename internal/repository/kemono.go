@@ -101,7 +101,7 @@ func (r *Repository) GetKemono(ctx context.Context, kemonoID uuid.UUID) (*domain
 
 func (r *Repository) GetKemonosByField(ctx context.Context, field int) ([]domains.Kemono, error) {
 	var kemono []domains.Kemono
-	if err := r.db.SelectContext(ctx, &kemono, "SELECT * FROM kemono WHERE field = ? AND is_in_field = TRUE", field); err != nil {
+	if err := r.db.SelectContext(ctx, &kemono, fmt.Sprintf("SELECT %s FROM kemono WHERE field = ? AND is_in_field = TRUE", domains.WithoutImageDBFields()), field); err != nil {
 		return nil, fmt.Errorf("select kemono: %w", err)
 	}
 

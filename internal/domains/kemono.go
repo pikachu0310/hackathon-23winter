@@ -135,6 +135,10 @@ func (kemonoParams *KemonoParams) ToKemono() *Kemono {
 	}
 }
 
+func WithoutImageDBFields() string {
+	return "id, prompt, concepts, name, description, kind, color, is_player, is_for_battle, is_owned, owner_id, is_in_field, is_boss, field, x, y, has_parent, parent1_id, parent2_id, has_child, child_id, max_hp, hp, attack, defense, created_at"
+}
+
 type KemonoStatus struct {
 	MaxHP   *int
 	Attack  *int
