@@ -1377,3 +1377,13 @@ func (h *Handler) GenerateFieldKemono(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, kemonoToGetKemonoResponse(kemono))
 }
+
+// POST /api/v1/fields/:fieldID/kemonos/normal
+func (h *Handler) GetNormalKemonoByField(c echo.Context) error {
+	normalKemono, err := h.repo.GetNormalKemonoByField(c.Request().Context(), 1)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	return c.JSON(http.StatusOK, kemonoToGetKemonoResponse(normalKemono))
+}

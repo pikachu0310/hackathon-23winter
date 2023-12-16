@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"github.com/pikachu0310/hackathon-23winter/internal/domains"
 	"github.com/pikachu0310/hackathon-23winter/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
@@ -79,6 +80,19 @@ func (h *Handler) Signup(c echo.Context) error {
 	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error(), err.Error()).SetInternal(err)
+	}
+
+	kemono, err := h.repo.GetNormalKemonoByField(c.Request().Context(), 1)
+	if err != nil {
+		return err
+	}
+	kemono.IsPlayer = domains.NewBool(true)
+	kemono.IsForBattle = domains.NewBool(true)
+	kemono.IsOwned = domains.NewBool(true)
+	kemono.OwnerID = &userID
+	kemono.IsInField = domains.NewBool(false)
+	if err = h.repo.UpdateKemono(c.Request().Context(), kemono); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
 	res := CreateUserResponse{

@@ -56,6 +56,7 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 	{
 		fieldAPI.GET("/:fieldID/kemonos", h.GetKemonosByField)
 		fieldAPI.GET("/:fieldID/kemonos/generate", h.GenerateFieldKemono)
+		fieldAPI.GET("/:fieldID/kemonos/normal", h.GetNormalKemonoByField)
 	}
 
 	// concept API

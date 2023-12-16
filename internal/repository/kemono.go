@@ -135,6 +135,15 @@ func (r *Repository) GetKemonoForBattleByOwnerId(ctx context.Context, ownerID uu
 	return &kemono, nil
 }
 
+func (r *Repository) GetNormalKemonoByField(ctx context.Context, field int) (*domains.Kemono, error) {
+	var kemono domains.Kemono
+	if err := r.db.GetContext(ctx, &kemono, "SELECT * FROM kemono WHERE field = ? AND is_player = FALSE AND is_for_battle = FALSE AND is_owned = FALSE AND is_in_field = TRUE AND is_boss = FALSE AND has_parent = FALSE AND has_parent = FALSE", field); err != nil {
+		return nil, fmt.Errorf("select kemono: %w", err)
+	}
+
+	return &kemono, nil
+}
+
 func (r *Repository) ResetKemonos() error {
 	err := migration.ResetKemonoTable(r.db.DB)
 	if err != nil {
