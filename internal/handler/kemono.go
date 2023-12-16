@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -203,6 +205,9 @@ func (h *Handler) GetKemono(c echo.Context) error {
 	}
 
 	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return echo.NewHTTPError(http.StatusNotFound, "kemono not found").SetInternal(err)
+	}
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -299,6 +304,14 @@ func (h *Handler) PostBattleByPlayerId(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 	oldKemono, err := h.repo.GetKemonoForBattleByOwnerId(c.Request().Context(), playerID)
+	if errors.Is(err, sql.ErrNoRows) {
+		newKemono.IsForBattle = domains.NewBool(true)
+		err = h.repo.UpdateKemono(c.Request().Context(), newKemono)
+		if err != nil {
+			return err
+		}
+		return c.NoContent(http.StatusOK)
+	}
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
