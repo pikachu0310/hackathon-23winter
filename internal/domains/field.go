@@ -50,7 +50,10 @@ func FieldTypeToConcepts2(fieldType FieldType) Concepts {
 			"植物と会話する",
 			"太陽の恵みを受ける",
 			"ふわもこ質感",
+			"ふんわり毛皮",
+			"パステルカラー",
 			"蜜愛好家",
+			"四足歩行",
 		}
 	case Grassland:
 		return Concepts{
@@ -60,7 +63,10 @@ func FieldTypeToConcepts2(fieldType FieldType) Concepts {
 			"植物と会話する",
 			"太陽の恵みを受ける",
 			"ふわもこ質感",
+			"ふんわり毛皮",
+			"パステルカラー",
 			"蜜愛好家",
+			"四足歩行",
 		}
 	}
 	return nil

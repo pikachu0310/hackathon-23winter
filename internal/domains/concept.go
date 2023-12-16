@@ -37,6 +37,6 @@ func (c Concepts) SelectConceptByRandom() string {
 	return c[rand.Intn(len(c))]
 }
 
-func (c Concepts) AddConcept(concept string) Concepts {
-	return append(c, concept)
+func (c *Concepts) Add(concept string) {
+	*c = append(*c, concept)
 }

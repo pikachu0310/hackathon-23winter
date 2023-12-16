@@ -1266,14 +1266,14 @@ func (h *Handler) GenerateFieldKemono(c echo.Context) error {
 
 	fieldType := domains.FieldIdToFieldType(fieldID)
 	x, y := domains.FieldTypeToPosition(fieldType)
-	var concepts domains.Concepts
-	concepts.AddConcept(domains.FieldTypeToConcepts1(fieldType).SelectConceptByRandom())
-	concepts.AddConcept(domains.FieldTypeToConcepts2(fieldType).SelectConceptByRandom())
-	concepts.AddConcept(domains.FieldTypeToConcepts2(fieldType).SelectConceptByRandom())
-	concepts.AddConcept(domains.FieldTypeToConcepts2(fieldType).SelectConceptByRandom())
-	concepts.AddConcept("とてもかわいい")
-	concepts.AddConcept("マスコット")
-	concepts.AddConcept("鮮やかな色")
+	concepts := domains.Concepts{}
+	concepts.Add(domains.FieldTypeToConcepts1(fieldType).SelectConceptByRandom())
+	concepts.Add(domains.FieldTypeToConcepts2(fieldType).SelectConceptByRandom())
+	concepts.Add(domains.FieldTypeToConcepts2(fieldType).SelectConceptByRandom())
+	concepts.Add(domains.FieldTypeToConcepts2(fieldType).SelectConceptByRandom())
+	concepts.Add("とてもかわいい")
+	concepts.Add("マスコット")
+	concepts.Add("鮮やかな色")
 
 	kemonoID, err := h.repo.CreateKemono(c.Request().Context(), &domains.Kemono{
 		ID:          nil,
