@@ -27,9 +27,9 @@ type (
 	}
 )
 
-func (r *Repository) GetUsers(ctx context.Context) ([]*User, error) {
-	users := []*User{}
-	if err := r.db.SelectContext(ctx, &users, "SELECT (id, name, created_at) FROM users"); err != nil {
+func (r *Repository) GetUsers(ctx context.Context) ([]User, error) {
+	var users []User
+	if err := r.db.SelectContext(ctx, &users, "SELECT id, name, created_at FROM users"); err != nil {
 		return nil, fmt.Errorf("select users: %w", err)
 	}
 
@@ -74,16 +74,16 @@ func (r *Repository) GetUserID(ctx context.Context, userName string) (uuid.UUID,
 }
 
 func (r *Repository) GetUser(ctx context.Context, userID uuid.UUID) (*User, error) {
-	user := &User{}
-	if err := r.db.GetContext(ctx, user, "SELECT * FROM users WHERE id = ?", userID); err != nil {
+	var user User
+	if err := r.db.GetContext(ctx, &user, "SELECT id, name, created_at FROM users WHERE id = ?", userID); err != nil {
 		return nil, fmt.Errorf("select user: %w", err)
 	}
 
-	return user, nil
+	return &user, nil
 }
 
 func (r *Repository) CreateUserByUserID(ctx context.Context, params CreateUserByIDParams) error {
-	if _, err := r.db.ExecContext(ctx, "INSERT INTO users (id, name) VALUES (?, ?)", params.ID, "test"); err != nil {
+	if _, err := r.db.ExecContext(ctx, "INSERT INTO users (id, name, password) VALUES (?, ?, ?)", params.ID, params.ID, "test"); err != nil {
 		return fmt.Errorf("insert user: %w", err)
 	}
 
