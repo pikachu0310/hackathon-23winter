@@ -269,6 +269,58 @@ func (h *Handler) GetMyKemono(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
+// GET /api/v1/users/:userID/kemonos/battle
+func (h *Handler) GetKemonoForBattleByOwnerId(c echo.Context) error {
+	playerID, err := uuid.Parse(c.Param("userID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid playerID").SetInternal(err)
+	}
+
+	kemono, err := h.repo.GetKemonoForBattleByOwnerId(c.Request().Context(), playerID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	res := kemonoToGetKemonoResponse(kemono)
+
+	return c.JSON(http.StatusOK, res)
+}
+
+// POST /api/v1/users/:userID/kemonos/battle
+func (h *Handler) PostBattleByPlayerId(c echo.Context) error {
+	playerID, err := uuid.Parse(c.Param("userID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid playerID").SetInternal(err)
+	}
+
+	newKemonoForBattleId, err := uuid.Parse(c.FormValue("kemono_id"))
+	newKemono, err := h.repo.GetKemono(c.Request().Context(), newKemonoForBattleId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+	oldKemono, err := h.repo.GetKemonoForBattleByOwnerId(c.Request().Context(), playerID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+	if newKemono.OwnerID != oldKemono.OwnerID {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid kemono_id").SetInternal(err)
+	}
+
+	newKemono.IsForBattle = domains.NewBool(true)
+	err = h.repo.UpdateKemono(c.Request().Context(), newKemono)
+	if err != nil {
+		return err
+	}
+
+	oldKemono.IsForBattle = domains.NewBool(false)
+	err = h.repo.UpdateKemono(c.Request().Context(), oldKemono)
+	if err != nil {
+		return err
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
 // POST /api/v1/kemonos
 func (h *Handler) CreateKemono(c echo.Context) error {
 	id1, _ := uuid.Parse("00000000-0000-0000-0000-000000000001")
@@ -286,6 +338,7 @@ func (h *Handler) CreateKemono(c echo.Context) error {
 		Kind:        0,
 		Color:       8,
 		IsPlayer:    true,
+		IsForBattle: true,
 		IsOwned:     true,
 		OwnerID:     id1,
 		IsInField:   false,

@@ -33,6 +33,8 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 
 		userAPI.GET("/:userID/me", h.GetMyKemono)
 		userAPI.GET("/:userID/kemonos", h.GetKemonoByOwnerId)
+		userAPI.GET("/:userID/kemonos/battle", h.GetKemonoForBattleByOwnerId)
+		userAPI.POST("/:userID/kemonos/battle", h.PostBattleByPlayerId)
 		userAPI.GET("/:userID/concepts", h.GetConceptsByPlayerId)
 	}
 
@@ -71,10 +73,11 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		battleAPI.POST("/:battle_id", h.PostBattleDamage)
 	}
 
-	//// test API
-	//testAPI := api.Group("/test")
-	//{
-	//	testAPI.GET("", h.Test)
+	// test API
+	testAPI := api.Group("/test")
+	{
+		testAPI.GET("", h.Test)
+	}
 	//	testAPI.GET("/2", h.Test2)
 	//	testAPI.GET("/3", h.Test3)
 	//	testAPI.GET("/4", h.Test4)

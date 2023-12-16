@@ -1,11 +1,31 @@
 package handler
 
+import (
+	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+	"net/http"
+)
+
 type TestResponse struct {
 	ImageString []byte `json:"image_string"`
 }
 
 type Test2Response struct {
 	GeneratedText string `json:"generated_text"`
+}
+
+// GET /api/v1/test
+func (h *Handler) Test(c echo.Context) error {
+	id, err := uuid.Parse("41df3470-e675-48af-b456-a44b8144c307")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+	err = h.generateBreedKemonoStatusAndUpdateKemono(c, id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	return c.JSON(http.StatusOK, nil)
 }
 
 //// GET /api/v1/test

@@ -245,3 +245,7 @@ func ParseKemonoConcepts(s *string) (*Concepts, error) {
 
 	return &concepts, nil
 }
+
+func NewBool(b bool) *bool {
+	return &b
+}
