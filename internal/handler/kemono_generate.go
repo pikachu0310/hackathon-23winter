@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/pikachu0310/hackathon-23winter/internal/api"
+	"github.com/pikachu0310/hackathon-23winter/internal/domains"
 	"net/http"
 )
 
@@ -77,12 +78,15 @@ func (h *Handler) generateKemonoStatusAndUpdateKemono(c echo.Context, kemonoID u
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	kemono.MaxHp = kemonoStatus.MaxHP
-	kemono.Hp = kemonoStatus.MaxHP
-	kemono.Attack = kemonoStatus.Attack
-	kemono.Defense = kemonoStatus.Defence
+	updateKemono := &domains.Kemono{
+		ID:      kemono.ID,
+		MaxHp:   kemonoStatus.MaxHP,
+		Hp:      kemonoStatus.MaxHP,
+		Attack:  kemonoStatus.Attack,
+		Defense: kemonoStatus.Defence,
+	}
 
-	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), updateKemono)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -100,10 +104,13 @@ func (h *Handler) generateKemonoCharacterChipAndUpdateKemono(c echo.Context, kem
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	kemono.Kind = kemonoCharacterChip.Kind
-	kemono.Color = kemonoCharacterChip.Color
+	updateKemono := &domains.Kemono{
+		ID:    kemono.ID,
+		Kind:  kemonoCharacterChip.Kind,
+		Color: kemonoCharacterChip.Color,
+	}
 
-	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), updateKemono)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -121,9 +128,12 @@ func (h *Handler) generateKemonoNameAndUpdateKemono(c echo.Context, kemonoID uui
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	kemono.Name = kemonoName
+	updateKemono := &domains.Kemono{
+		ID:   kemono.ID,
+		Name: kemonoName,
+	}
 
-	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), updateKemono)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
