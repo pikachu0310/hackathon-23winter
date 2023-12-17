@@ -4,6 +4,20 @@ import (
 	"github.com/pikachu0310/hackathon-23winter/internal/domains"
 )
 
+func GenerateKemonoConcepts(fieldID int) (*domains.Concepts, error) {
+	prompt, err := generateKemonoConceptsPrompt(fieldID)
+	if err != nil {
+		return nil, err
+	}
+
+	kemonoConceptsText, err := generateTextByGPT4Vision(prompt)
+	if err != nil {
+		return nil, err
+	}
+
+	return domains.ParseKemonoConcepts(kemonoConceptsText)
+}
+
 func GenerateKemonoPrompt(kemono *domains.Kemono) (*string, error) {
 	prompt, err := createKemonoPromptPrompt(kemono.Concepts.Concepts())
 	if err != nil {

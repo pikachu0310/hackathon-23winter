@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/pikachu0310/hackathon-23winter/internal/api"
 	"github.com/pikachu0310/hackathon-23winter/internal/domains"
 	"github.com/pikachu0310/hackathon-23winter/src/images"
 	"golang.org/x/sync/errgroup"
@@ -1270,13 +1271,15 @@ func (h *Handler) GenerateFieldKemono(c echo.Context) error {
 	fieldType := domains.FieldIdToFieldType(fieldID)
 	x, y := domains.FieldTypeToPosition(fieldType)
 	concepts := domains.Concepts{}
+	kemonoConcepts, err := api.GenerateKemonoConcepts(fieldID)
+	if err != nil {
+		return err
+	}
+	for _, concept := range *kemonoConcepts {
+		concepts.Add(concept)
+	}
 	concepts.Add(domains.FieldTypeToConcepts1(fieldType).SelectConceptByRandom())
 	concepts.Add(domains.FieldTypeToConcepts2(fieldType).SelectConceptByRandom())
-	concepts.Add(domains.FieldTypeToConcepts2(fieldType).SelectConceptByRandom())
-	concepts.Add(domains.FieldTypeToConcepts2(fieldType).SelectConceptByRandom())
-	concepts.Add("とてもかわいい")
-	concepts.Add("マスコット")
-	concepts.Add("鮮やかな色")
 
 	kemonoID, err := h.repo.CreateKemono(c.Request().Context(), &domains.Kemono{
 		ID:          nil,

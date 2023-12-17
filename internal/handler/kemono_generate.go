@@ -274,3 +274,22 @@ func (h *Handler) generateBreedKemonoConceptsAndUpdateKemono(c echo.Context, kem
 	}
 	return nil
 }
+
+//func (h *Handler) generateKemonoConcepts(c echo.Context, kemonoID uuid.UUID) error {
+//	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
+//	if err != nil {
+//		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+//	}
+//	kemonoConcepts, err := api.GenerateKemonoConcepts(kemono)
+//	if err != nil {
+//		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+//	}
+//	kemono.Concepts = kemonoConcepts.Text()
+//
+//	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+//	if err != nil {
+//		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+//	}
+//
+//	return nil
+//}
