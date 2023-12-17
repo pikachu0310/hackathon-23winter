@@ -91,6 +91,8 @@ func (h *Handler) Signup(c echo.Context) error {
 	kemono.IsOwned = domains.NewBool(true)
 	kemono.OwnerID = &userID
 	kemono.IsInField = domains.NewBool(false)
+	attack := 23
+	kemono.Attack = &attack
 	if err = h.repo.UpdateKemono(c.Request().Context(), kemono); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
