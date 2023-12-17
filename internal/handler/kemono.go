@@ -1435,10 +1435,11 @@ func (h *Handler) PostPositionByUser(c echo.Context) error {
 	}
 
 	updateKemono := &domains.Kemono{
-		ID:    myKemono.ID,
-		Field: &fieldID,
-		X:     &x,
-		Y:     &y,
+		ID:        myKemono.ID,
+		Field:     &fieldID,
+		IsInField: domains.NewBool(true),
+		X:         &x,
+		Y:         &y,
 	}
 
 	err = h.repo.UpdateKemono(c.Request().Context(), updateKemono)
