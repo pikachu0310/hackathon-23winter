@@ -1446,5 +1446,5 @@ func (h *Handler) PostPositionByUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
-	return c.JSON(http.StatusOK, myKemono)
+	return c.NoContent(http.StatusOK)
 }

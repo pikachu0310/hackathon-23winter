@@ -33,12 +33,13 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		userAPI.GET("/:userID", h.GetUser)
 
 		userAPI.GET("/:userID/me", h.GetMyKemono)
+		userAPI.POST("/:userID/position", h.PostPositionByUser)
 		userAPI.GET("/:userID/kemonos", h.GetKemonoByOwnerId)
 		userAPI.GET("/:userID/kemonos/me", h.GetMyKemono)
 		userAPI.GET("/:userID/kemonos/battle", h.GetKemonoForBattleByOwnerId)
 		userAPI.POST("/:userID/kemonos/battle", h.PostBattleByPlayerId)
+		userAPI.POST("/:userID/kemonos/position", h.PostPositionByUser)
 		userAPI.GET("/:userID/concepts", h.GetConceptsByPlayerId)
-		userAPI.POST("/:userID/position", h.PostPositionByUser)
 	}
 
 	// kemono API
