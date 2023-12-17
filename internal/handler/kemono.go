@@ -272,7 +272,7 @@ func (h *Handler) GetMyKemono(c echo.Context) error {
 
 	res := kemonoToGetKemonoResponse(kemono)
 
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, res.WithoutImage())
 }
 
 // GET /api/v1/users/:userID/kemonos/battle
