@@ -167,8 +167,8 @@ func createKemonoStatusPrompt(description *string, concepts domains.Concepts, im
 		ケモノのキャラクターのステータスパラメーターを出力する際は、以下のフォーマットに従ってください。
 		```
 		MaxHP=100
-		Attack=10
-		Defence=5
+		Attack=30
+		Defence=10
 		```
 
 		ケモノのキャラクターの特徴は以下の通りです。
@@ -186,14 +186,14 @@ func createKemonoStatusPrompt(description *string, concepts domains.Concepts, im
 		それでは、考えたケモノのキャラクターのステータスパラメーターを以下のフォーマットに従って出力してください。
 		```
 		MaxHP=100
-		Attack=10
-		Defence=5
+		Attack=30
+		Defence=10
 		```
 	*/
 	/*
-		MaxHP=70
-		Attack=8
-		Defence=6
+		MaxHP=30
+		Attack=9
+		Defence=3
 	*/
 	/*
 		完璧です！まったく同じようにして、以下のケモノのステータスパラメーターも考えてください。
@@ -509,7 +509,7 @@ func generateBattleTextPrompt(attacker *domains.Kemono, defender *domains.Kemono
 		与えたダメージの数値は以下の通りです。
 		- 18
 
-		以上の2匹のケモノキャラクターの特徴や詳細から、ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃を行う1ターンの戦闘の様子を描写する戦闘テキストを考えて、200文字程度で出力してください。ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃する様子と、ケモノのキャラクター2匹目が指定した数値のダメージを食らう描写を必ずしてください。
+		以上の2匹のケモノキャラクターの特徴や詳細から、ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃を行う1ターンの戦闘の様子を描写する戦闘テキストを考えて、100文字程度で出力してください。ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃する様子と、ケモノのキャラクター2匹目が指定した数値のダメージを食らう描写を必ずしてください。ケモノのセリフがあるとなお良いです。
 	*/
 
 	var promptTexts []string
@@ -535,15 +535,10 @@ func generateBattleTextPrompt(attacker *domains.Kemono, defender *domains.Kemono
 	promptTexts = append(promptTexts, fmt.Sprintf("```\nMaxHP=%d\nAttack=%d\nDefence=%d\n```", *defender.MaxHp, *defender.Attack, *defender.Defense))
 	promptTexts = append(promptTexts, "\n与えたダメージの数値は以下の通りです。")
 	promptTexts = append(promptTexts, fmt.Sprintf("- %d", damage))
-	promptTexts = append(promptTexts, "\n\n以上の2匹のケモノキャラクターの特徴や詳細から、ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃を行う1ターンの戦闘の様子を描写する戦闘テキストを考えて、200文字程度で出力してください。ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃する様子と、ケモノのキャラクター2匹目が指定した数値のダメージを食らう描写を必ずしてください。")
+	promptTexts = append(promptTexts, "\n\n以上の2匹のケモノキャラクターの特徴や詳細から、ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃を行う1ターンの戦闘の様子を描写する戦闘テキストを考えて、100文字程度で出力してください。ケモノのキャラクター1匹目がケモノのキャラクター2匹目に攻撃する様子と、ケモノのキャラクター2匹目が指定した数値のダメージを食らう描写を必ずしてください。ケモノのセリフがあるとなお良いです。")
 	promptText := strings.Join(promptTexts, "\n")
 
-	var userContent MessageContents
-	err = userContent.AddText(promptText)
-	if err != nil {
-		return nil, err
-	}
-	err = messages.AddUserMessageContent(userContent)
+	err = messages.AddUserMessageContentText(promptText)
 	if err != nil {
 		return nil, err
 	}

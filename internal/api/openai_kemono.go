@@ -62,7 +62,7 @@ func GenerateBattleText(attacker *domains.Kemono, defender *domains.Kemono, dama
 	if err != nil {
 		return nil, err
 	}
-	return generateTextByGPT4Vision(prompt)
+	return generateTextByGPT3Dot5(prompt)
 }
 
 func BreedKemonoPrompt(kemonoParent1 *domains.Kemono, kemonoParent2 *domains.Kemono) (*string, error) {

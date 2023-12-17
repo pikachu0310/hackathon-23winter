@@ -52,7 +52,7 @@ func init() {
 		log.Panic(err)
 	}
 
-	err = createChatCompletionModel.FromCreateChatCompletionRequestModel1(openai_api.CreateChatCompletionRequestModel1Gpt41106Preview)
+	err = createChatCompletionModel.FromCreateChatCompletionRequestModel1(openai_api.CreateChatCompletionRequestModel1Gpt35Turbo1106)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -60,6 +60,7 @@ func init() {
 
 type ChatMessages []openai_api.ChatCompletionRequestMessage
 type MessageContents openai_api.ChatCompletionRequestUserMessageContent1
+type MessageContentsText = openai_api.ChatCompletionRequestUserMessageContent0
 
 func (chatMessage *ChatMessages) AddUserMessageContent(messageContents MessageContents) error {
 	var content openai_api.ChatCompletionRequestUserMessage_Content
@@ -76,6 +77,22 @@ func (chatMessage *ChatMessages) AddUserMessageContent(messageContents MessageCo
 	if err != nil {
 		return err
 	}
+	*chatMessage = append(*chatMessage, message)
+	return nil
+}
+
+func (chatMessage *ChatMessages) AddUserMessageContentText(text string) error {
+	content := openai_api.ChatCompletionRequestUserMessage_Content{}
+	err := content.FromChatCompletionRequestUserMessageContent0(text)
+	if err != nil {
+		return err
+	}
+	userMessage := openai_api.ChatCompletionRequestUserMessage{
+		Content: content,
+		Role:    openai_api.ChatCompletionRequestUserMessageRoleUser,
+	}
+	var message openai_api.ChatCompletionRequestMessage
+	err = message.FromChatCompletionRequestUserMessage(userMessage)
 	*chatMessage = append(*chatMessage, message)
 	return nil
 }
@@ -196,6 +213,29 @@ func generateTextByGPT4Vision(messages ChatMessages) (*string, error) {
 	}
 	if res.HTTPResponse.StatusCode != 200 {
 		return nil, fmt.Errorf("failed to generate text by GPT-4: %s", string(res.Body))
+	}
+
+	responseMessages := res.JSON200
+	latestResponseMessage := responseMessages.Choices[len(responseMessages.Choices)-1]
+
+	return latestResponseMessage.Message.Content, nil
+}
+
+func generateTextByGPT3Dot5(messages ChatMessages) (*string, error) {
+	req := openai_api.CreateChatCompletionRequest{
+		Model:     createChatCompletionModel,
+		MaxTokens: &createChatCompletionMaxTokens,
+		Messages:  messages,
+		N:         &createChatCompletionN,
+		Stream:    &createChatCompletionStream,
+	}
+
+	res, err := client.CreateChatCompletionWithResponse(context.Background(), req)
+	if err != nil {
+		return nil, err
+	}
+	if res.HTTPResponse.StatusCode != 200 {
+		return nil, fmt.Errorf("failed to generate text by GPT-3.5: %s", string(res.Body))
 	}
 
 	responseMessages := res.JSON200
