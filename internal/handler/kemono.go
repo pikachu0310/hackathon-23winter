@@ -1393,7 +1393,7 @@ func (h *Handler) GetNormalKemonoByField(c echo.Context) error {
 
 // POST /api/v1/users/:userID/positions
 func (h *Handler) PostPositionByUser(c echo.Context) error {
-	userID, err := uuid.Parse(c.Param("user_id"))
+	userID, err := uuid.Parse(c.Param("userID"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid user_id").SetInternal(err)
 	}
