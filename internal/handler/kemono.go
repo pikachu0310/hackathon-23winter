@@ -1390,3 +1390,42 @@ func (h *Handler) GetNormalKemonoByField(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, kemonoToGetKemonoResponse(normalKemono))
 }
+
+// POST /api/v1/users/:userID/positions
+func (h *Handler) PostPositionByUser(c echo.Context) error {
+	userID, err := uuid.Parse(c.Param("user_id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid user_id").SetInternal(err)
+	}
+	fieldID, err := strconv.Atoi(c.FormValue("field_id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid field_id").SetInternal(err)
+	}
+	x, err := strconv.Atoi(c.FormValue("x"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid player_id").SetInternal(err)
+	}
+	y, err := strconv.Atoi(c.FormValue("y"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid player_id").SetInternal(err)
+	}
+
+	myKemono, err := h.repo.GetMyKemonoByUserId(c.Request().Context(), userID)
+	if err != nil {
+		return err
+	}
+
+	updateKemono := &domains.Kemono{
+		ID:    myKemono.ID,
+		Field: &fieldID,
+		X:     &x,
+		Y:     &y,
+	}
+
+	err = h.repo.UpdateKemono(c.Request().Context(), updateKemono)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	return c.JSON(http.StatusOK, myKemono)
+}

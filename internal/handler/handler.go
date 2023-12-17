@@ -37,6 +37,7 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		userAPI.GET("/:userID/kemonos/battle", h.GetKemonoForBattleByOwnerId)
 		userAPI.POST("/:userID/kemonos/battle", h.PostBattleByPlayerId)
 		userAPI.GET("/:userID/concepts", h.GetConceptsByPlayerId)
+		userAPI.POST("/:userID/position", h.PostPositionByUser)
 	}
 
 	// kemono API
