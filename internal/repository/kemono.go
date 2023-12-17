@@ -119,7 +119,7 @@ func (r *Repository) GetKemonosByField(ctx context.Context, field int) ([]domain
 
 func (r *Repository) GetKemonoByOwnerId(ctx context.Context, ownerID uuid.UUID) ([]domains.Kemono, error) {
 	var kemono []domains.Kemono
-	if err := r.db.SelectContext(ctx, &kemono, "SELECT * FROM kemono WHERE owner_id = ? AND has_child = FALSE", ownerID); err != nil {
+	if err := r.db.SelectContext(ctx, &kemono, "SELECT * FROM kemono WHERE owner_id = ? AND has_child = FALSE ORDER BY created_at DESC", ownerID); err != nil {
 		return nil, fmt.Errorf("select kemono: %w", err)
 	}
 
