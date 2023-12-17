@@ -128,7 +128,7 @@ func (r *Repository) GetMyKemonoByUserId(ctx context.Context, ownerID uuid.UUID)
 
 func (r *Repository) GetKemonoForBattleByOwnerId(ctx context.Context, ownerID uuid.UUID) (*domains.Kemono, error) {
 	var kemono domains.Kemono
-	if err := r.db.GetContext(ctx, &kemono, "SELECT * FROM kemono WHERE owner_id = ? AND is_for_battle = TRUE AND has_child = FALSE", ownerID); err != nil {
+	if err := r.db.GetContext(ctx, &kemono, "SELECT * FROM kemono WHERE owner_id = ? AND is_for_battle = TRUE AND has_child = FALSE LIMIT 1", ownerID); err != nil {
 		return nil, fmt.Errorf("select kemono: %w", err)
 	}
 
