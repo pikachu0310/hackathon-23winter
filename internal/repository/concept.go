@@ -80,6 +80,7 @@ func (r *Repository) GetConceptsByPlayerId(playerId uuid.UUID) (concepts []Conce
 		SELECT *
 		FROM concept
 		WHERE player_id = ?
+		ORDER BY concept
 	`, playerId)
 	if err != nil {
 		return nil, err
