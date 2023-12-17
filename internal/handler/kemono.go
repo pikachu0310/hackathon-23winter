@@ -1167,6 +1167,10 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
+	if *kemonoParent1.ChildID != uuid.Nil || *kemonoParent2.ChildID != uuid.Nil {
+		return echo.NewHTTPError(http.StatusConflict, "kemono is already bred")
+	}
+
 	kemonoID, err := h.repo.CreateKemono(c.Request().Context(), &domains.Kemono{
 		ID:          nil,
 		Image:       nil,
@@ -1200,9 +1204,28 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
+	var updateKemonoBody *domains.Kemono
+	updateKemonoBody = &domains.Kemono{
+		ID:      kemonoParent1.ID,
+		ChildID: &kemonoID,
+	}
+	err = h.repo.UpdateKemono(c.Request().Context(), updateKemonoBody)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+	updateKemonoBody = &domains.Kemono{
+		ID:      kemonoParent2.ID,
+		ChildID: &kemonoID,
+	}
+	err = h.repo.UpdateKemono(c.Request().Context(), updateKemonoBody)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
 	// 12s
 	err = h.generateBreedKemonoPromptAndUpdateKemono(c, kemonoID)
 	if err != nil {
+		h.revertChildID(c, kemonoParent1, kemonoParent2)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
@@ -1211,6 +1234,7 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 	// 15s
 	err = h.generateBreedKemonoImageAndUpdateKemono(c, kemonoID)
 	if err != nil {
+		h.revertChildID(c, kemonoParent1, kemonoParent2)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
@@ -1219,6 +1243,7 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 	// 11s
 	err = h.generateBreedKemonoDescriptionAndUpdateKemono(c, kemonoID)
 	if err != nil {
+		h.revertChildID(c, kemonoParent1, kemonoParent2)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
@@ -1227,6 +1252,7 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 	// 8s
 	err = h.generateBreedKemonoConceptsAndUpdateKemono(c, kemonoID)
 	if err != nil {
+		h.revertChildID(c, kemonoParent1, kemonoParent2)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
@@ -1234,6 +1260,7 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 
 	err = h.generateBreedKemonoStatusAndUpdateKemono(c, kemonoID)
 	if err != nil {
+		h.revertChildID(c, kemonoParent1, kemonoParent2)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
@@ -1256,6 +1283,7 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 	})
 	err = eg.Wait()
 	if err != nil {
+		h.revertChildID(c, kemonoParent1, kemonoParent2)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
@@ -1263,6 +1291,7 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 
 	kemono, err := h.repo.GetKemono(c.Request().Context(), kemonoID)
 	if err != nil {
+		h.revertChildID(c, kemonoParent1, kemonoParent2)
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
@@ -1292,6 +1321,21 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, kemonoToGetKemonoResponse(kemono))
+}
+
+func (h *Handler) revertChildID(c echo.Context, kemonoParent1 *domains.Kemono, kemonoParent2 *domains.Kemono) {
+	var updateKemonoBody *domains.Kemono
+	updateKemonoBody = &domains.Kemono{
+		ID:      kemonoParent1.ID,
+		ChildID: &uuid.Nil,
+	}
+	_ = h.repo.UpdateKemono(c.Request().Context(), updateKemonoBody)
+	updateKemonoBody = &domains.Kemono{
+		ID:      kemonoParent2.ID,
+		ChildID: &uuid.Nil,
+	}
+	_ = h.repo.UpdateKemono(c.Request().Context(), updateKemonoBody)
+	return
 }
 
 // POST /api/v1/fields/:fieldID/kemonos/generate
