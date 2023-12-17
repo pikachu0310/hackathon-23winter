@@ -99,6 +99,15 @@ func (r *Repository) GetKemono(ctx context.Context, kemonoID uuid.UUID) (*domain
 	return &kemono, nil
 }
 
+func (r *Repository) GetKemonoImage(ctx context.Context, kemonoID uuid.UUID) ([]byte, error) {
+	var kemono domains.Kemono
+	if err := r.db.GetContext(ctx, &kemono, "SELECT image FROM kemono WHERE id = ?", kemonoID); err != nil {
+		return nil, fmt.Errorf("select kemono: %w", err)
+	}
+
+	return kemono.Image, nil
+}
+
 func (r *Repository) GetKemonosByField(ctx context.Context, field int) ([]domains.Kemono, error) {
 	var kemono []domains.Kemono
 	if err := r.db.SelectContext(ctx, &kemono, fmt.Sprintf("SELECT %s FROM kemono WHERE field = ? AND is_in_field = TRUE", domains.WithoutImageDBFields()), field); err != nil {

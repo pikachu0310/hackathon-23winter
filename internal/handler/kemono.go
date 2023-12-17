@@ -218,6 +218,25 @@ func (h *Handler) GetKemono(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
+// GET /api/v1/kemonos/:kemonoID/image
+func (h *Handler) GetKemonoImage(c echo.Context) error {
+	kemonoID, err := uuid.Parse(c.Param("kemonoID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid kemonoID").SetInternal(err)
+	}
+
+	kemonoImage, err := h.repo.GetKemonoImage(c.Request().Context(), kemonoID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return echo.NewHTTPError(http.StatusNotFound, "kemono not found").SetInternal(err)
+	}
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	return c.Blob(http.StatusOK, "image/png", kemonoImage)
+
+}
+
 // GET /api/v1/fields/:fieldID/kemonos
 func (h *Handler) GetKemonosByField(c echo.Context) error {
 	fieldID, err := strconv.Atoi(c.Param("fieldID"))

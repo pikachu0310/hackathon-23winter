@@ -46,6 +46,7 @@ func (h *Handler) SetupRoutes(api *echo.Group) {
 		kemonoAPI.GET("", h.GetKemonos)
 		kemonoAPI.POST("", h.CreateKemono)
 		kemonoAPI.GET("/:kemonoID", h.GetKemono)
+		kemonoAPI.GET("/:kemonoID/image", h.GetKemonoImage)
 		kemonoAPI.POST("/:kemonoID/catch", h.CatchKemono)
 		kemonoAPI.POST("/:kemonoID/extract", h.ExtractKemono)
 		kemonoAPI.POST("/generate", h.GenerateKemono)
