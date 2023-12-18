@@ -269,25 +269,39 @@ func (h *Handler) GetKemonoByOwnerId(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
+	kemonoPlayerFound := false
 	kemonoPlayer := domains.Kemono{}
+	kemonoBattlerFound := false
 	kemonoBattler := domains.Kemono{}
 	for _, kemono := range kemonos {
 		if *kemono.IsPlayer {
 			kemonoPlayer = kemono
+			kemonoPlayerFound = true
 		}
 		if *kemono.IsForBattle {
 			kemonoBattler = kemono
+			kemonoBattlerFound = true
 		}
 	}
 	res := GetKemonosResponse{}
-	res = append(res, kemonoToGetKemonoResponse(&kemonoPlayer))
-	if *kemonoBattler.ID != *kemonoBattler.ID {
+	if kemonoPlayerFound {
+		res = append(res, kemonoToGetKemonoResponse(&kemonoPlayer))
+	}
+	if kemonoBattlerFound {
 		res = append(res, kemonoToGetKemonoResponse(&kemonoBattler))
 	}
 	for _, kemono := range kemonos {
-		if *kemono.ID != *kemonoPlayer.ID && *kemono.ID != *kemonoBattler.ID {
-			res = append(res, kemonoToGetKemonoResponse(&kemono))
+		if kemonoPlayerFound {
+			if *kemono.ID == *kemonoPlayer.ID {
+				continue
+			}
 		}
+		if kemonoBattlerFound {
+			if *kemono.ID == *kemonoBattler.ID {
+				continue
+			}
+		}
+		res = append(res, kemonoToGetKemonoResponse(&kemono))
 	}
 
 	return c.JSON(http.StatusOK, res)
