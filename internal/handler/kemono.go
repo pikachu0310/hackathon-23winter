@@ -287,8 +287,10 @@ func (h *Handler) GetKemonoByOwnerId(c echo.Context) error {
 	if kemonoPlayerFound {
 		res = append(res, kemonoToGetKemonoResponse(&kemonoPlayer))
 	}
-	if kemonoBattlerFound {
-		res = append(res, kemonoToGetKemonoResponse(&kemonoBattler))
+	if kemonoBattlerFound && kemonoPlayerFound {
+		if *kemonoBattler.ID != *kemonoPlayer.ID {
+			res = append(res, kemonoToGetKemonoResponse(&kemonoBattler))
+		}
 	}
 	for _, kemono := range kemonos {
 		if kemonoPlayerFound {
