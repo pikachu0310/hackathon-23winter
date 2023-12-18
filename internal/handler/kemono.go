@@ -358,8 +358,10 @@ func (h *Handler) PostBattleByPlayerId(c echo.Context) error {
 	}
 	oldKemono, err := h.repo.GetKemonoForBattleByOwnerId(c.Request().Context(), playerID)
 	if errors.Is(err, sql.ErrNoRows) {
-		newKemono.IsForBattle = domains.NewBool(true)
-		err = h.repo.UpdateKemono(c.Request().Context(), newKemono)
+		err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+			ID:          newKemono.ID,
+			IsForBattle: domains.NewBool(true),
+		})
 		if err != nil {
 			return err
 		}
@@ -372,14 +374,17 @@ func (h *Handler) PostBattleByPlayerId(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid kemono_owner_id:%s user_id:%s", *newKemono.OwnerID, playerID)).SetInternal(err)
 	}
 
-	newKemono.IsForBattle = domains.NewBool(true)
-	err = h.repo.UpdateKemono(c.Request().Context(), newKemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:          newKemono.ID,
+		IsForBattle: domains.NewBool(true),
+	})
 	if err != nil {
 		return err
 	}
-
-	oldKemono.IsForBattle = domains.NewBool(false)
-	err = h.repo.UpdateKemono(c.Request().Context(), oldKemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:          oldKemono.ID,
+		IsForBattle: domains.NewBool(false),
+	})
 	if err != nil {
 		return err
 	}
@@ -1007,11 +1012,12 @@ func (h *Handler) CatchKemono(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusConflict, "kemono is player")
 	}
 
-	kemono.IsOwned = domains.NewBool(true)
-	kemono.OwnerID = &playerId
-	kemono.IsInField = domains.NewBool(false)
-
-	if err = h.repo.UpdateKemono(c.Request().Context(), kemono); err != nil {
+	if err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:        &kemonoID,
+		IsOwned:   domains.NewBool(true),
+		OwnerID:   &playerId,
+		IsInField: domains.NewBool(false),
+	}); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
@@ -1218,20 +1224,17 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
-	var updateKemonoBody *domains.Kemono
-	updateKemonoBody = &domains.Kemono{
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
 		ID:      kemonoParent1.ID,
 		ChildID: &kemonoID,
-	}
-	err = h.repo.UpdateKemono(c.Request().Context(), updateKemonoBody)
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	updateKemonoBody = &domains.Kemono{
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
 		ID:      kemonoParent2.ID,
 		ChildID: &kemonoID,
-	}
-	err = h.repo.UpdateKemono(c.Request().Context(), updateKemonoBody)
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -1309,27 +1312,42 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
+	kemonoParent1, err = h.repo.GetKemono(c.Request().Context(), kemono1ID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+	kemonoParent2, err = h.repo.GetKemono(c.Request().Context(), kemono2ID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
 	isPlayer := *kemonoParent1.IsPlayer || *kemonoParent2.IsPlayer
 	isForBattle := *kemonoParent1.IsForBattle || *kemonoParent2.IsForBattle
-	kemono.OwnerID = kemonoParent1.OwnerID
-	kemono.IsOwned = domains.NewBool(true)
-	kemono.IsForBattle = &isForBattle
-	kemono.IsPlayer = &isPlayer
-	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:          &kemonoID,
+		OwnerID:     kemonoParent1.OwnerID,
+		IsOwned:     domains.NewBool(true),
+		IsForBattle: &isForBattle,
+		IsPlayer:    &isPlayer,
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
-	kemonoParent1.HasChild = domains.NewBool(true)
-	kemonoParent1.ChildID = &kemonoID
-	err = h.repo.UpdateKemono(c.Request().Context(), kemonoParent1)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:       kemonoParent1.ID,
+		HasChild: domains.NewBool(true),
+		ChildID:  &kemonoID,
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
-	kemonoParent2.HasChild = domains.NewBool(true)
-	kemonoParent2.ChildID = &kemonoID
-	err = h.repo.UpdateKemono(c.Request().Context(), kemonoParent2)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:       kemonoParent2.ID,
+		HasChild: domains.NewBool(true),
+		ChildID:  &kemonoID,
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -1338,17 +1356,14 @@ func (h *Handler) BreedKemono(c echo.Context) error {
 }
 
 func (h *Handler) revertChildID(c echo.Context, kemonoParent1 *domains.Kemono, kemonoParent2 *domains.Kemono) {
-	var updateKemonoBody *domains.Kemono
-	updateKemonoBody = &domains.Kemono{
+	_ = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
 		ID:      kemonoParent1.ID,
 		ChildID: &uuid.Nil,
-	}
-	_ = h.repo.UpdateKemono(c.Request().Context(), updateKemonoBody)
-	updateKemonoBody = &domains.Kemono{
+	})
+	_ = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
 		ID:      kemonoParent2.ID,
 		ChildID: &uuid.Nil,
-	}
-	_ = h.repo.UpdateKemono(c.Request().Context(), updateKemonoBody)
+	})
 	return
 }
 
@@ -1508,15 +1523,13 @@ func (h *Handler) PostPositionByUser(c echo.Context) error {
 		return err
 	}
 
-	updateKemono := &domains.Kemono{
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
 		ID:        myKemono.ID,
 		Field:     &fieldID,
 		IsInField: domains.NewBool(true),
 		X:         &x,
 		Y:         &y,
-	}
-
-	err = h.repo.UpdateKemono(c.Request().Context(), updateKemono)
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}

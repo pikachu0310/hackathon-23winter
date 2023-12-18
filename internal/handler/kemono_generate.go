@@ -18,9 +18,10 @@ func (h *Handler) generateKemonoPromptAndUpdateKemono(c echo.Context, kemonoID u
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	kemono.Prompt = prompt
-
-	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:     kemono.ID,
+		Prompt: prompt,
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -38,9 +39,11 @@ func (h *Handler) generateKemonoImageAndUpdateKemono(c echo.Context, kemonoID uu
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	kemono.Image = image
 
-	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:    kemono.ID,
+		Image: image,
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -60,7 +63,10 @@ func (h *Handler) generateKemonoDescriptionAndUpdateKemono(c echo.Context, kemon
 	}
 	kemono.Description = kemonoDescription
 
-	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:          kemono.ID,
+		Description: kemonoDescription,
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -78,15 +84,14 @@ func (h *Handler) generateKemonoStatusAndUpdateKemono(c echo.Context, kemonoID u
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	updateKemono := &domains.Kemono{
+
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
 		ID:      kemono.ID,
 		MaxHp:   kemonoStatus.MaxHP,
 		Hp:      kemonoStatus.MaxHP,
 		Attack:  kemonoStatus.Attack,
 		Defense: kemonoStatus.Defence,
-	}
-
-	err = h.repo.UpdateKemono(c.Request().Context(), updateKemono)
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -104,13 +109,12 @@ func (h *Handler) generateKemonoCharacterChipAndUpdateKemono(c echo.Context, kem
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	updateKemono := &domains.Kemono{
+
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
 		ID:    kemono.ID,
 		Kind:  kemonoCharacterChip.Kind,
 		Color: kemonoCharacterChip.Color,
-	}
-
-	err = h.repo.UpdateKemono(c.Request().Context(), updateKemono)
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -128,12 +132,11 @@ func (h *Handler) generateKemonoNameAndUpdateKemono(c echo.Context, kemonoID uui
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	updateKemono := &domains.Kemono{
+
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
 		ID:   kemono.ID,
 		Name: kemonoName,
-	}
-
-	err = h.repo.UpdateKemono(c.Request().Context(), updateKemono)
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -159,9 +162,11 @@ func (h *Handler) generateBreedKemonoPromptAndUpdateKemono(c echo.Context, kemon
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	kemono.Prompt = prompt
 
-	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:     kemono.ID,
+		Prompt: prompt,
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -179,9 +184,11 @@ func (h *Handler) generateBreedKemonoImageAndUpdateKemono(c echo.Context, kemono
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	kemono.Image = image
 
-	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:    kemono.ID,
+		Image: image,
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -207,9 +214,11 @@ func (h *Handler) generateBreedKemonoDescriptionAndUpdateKemono(c echo.Context, 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	kemono.Description = kemonoDescription
 
-	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:          kemono.ID,
+		Description: kemonoDescription,
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -235,12 +244,14 @@ func (h *Handler) generateBreedKemonoStatusAndUpdateKemono(c echo.Context, kemon
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	kemono.MaxHp = kemonoStatus.MaxHP
-	kemono.Hp = kemonoStatus.MaxHP
-	kemono.Attack = kemonoStatus.Attack
-	kemono.Defense = kemonoStatus.Defence
 
-	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:      kemono.ID,
+		MaxHp:   kemonoStatus.MaxHP,
+		Hp:      kemonoStatus.MaxHP,
+		Attack:  kemonoStatus.Attack,
+		Defense: kemonoStatus.Defence,
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
@@ -266,9 +277,11 @@ func (h *Handler) generateBreedKemonoConceptsAndUpdateKemono(c echo.Context, kem
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
-	kemono.Concepts = kemonoConcepts.Text()
 
-	err = h.repo.UpdateKemono(c.Request().Context(), kemono)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:       kemono.ID,
+		Concepts: kemonoConcepts.Text(),
+	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}

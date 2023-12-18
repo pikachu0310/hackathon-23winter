@@ -5,6 +5,7 @@ import (
 	"github.com/pikachu0310/hackathon-23winter/internal/domains"
 	"github.com/pikachu0310/hackathon-23winter/internal/repository"
 	"golang.org/x/crypto/bcrypt"
+	"math/rand"
 	"net/http"
 
 	vd "github.com/go-ozzo/ozzo-validation"
@@ -86,14 +87,17 @@ func (h *Handler) Signup(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	kemono.IsPlayer = domains.NewBool(true)
-	kemono.IsForBattle = domains.NewBool(true)
-	kemono.IsOwned = domains.NewBool(true)
-	kemono.OwnerID = &userID
-	kemono.IsInField = domains.NewBool(false)
-	attack := 23
-	kemono.Attack = &attack
-	if err = h.repo.UpdateKemono(c.Request().Context(), kemono); err != nil {
+	attack := 21 + rand.Intn(5)
+	err = h.repo.UpdateKemono(c.Request().Context(), &domains.Kemono{
+		ID:          kemono.ID,
+		IsPlayer:    kemono.IsPlayer,
+		IsForBattle: kemono.IsForBattle,
+		IsOwned:     kemono.IsOwned,
+		OwnerID:     kemono.OwnerID,
+		IsInField:   kemono.IsInField,
+		Attack:      &attack,
+	})
+	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
 	}
 
