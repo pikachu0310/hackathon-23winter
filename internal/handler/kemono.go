@@ -309,6 +309,26 @@ func (h *Handler) GetKemonoByOwnerId(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
+// GET /api/v1/users/:userID/kemonos/noimage
+func (h *Handler) GetKemonoByOwnerIdNoImage(c echo.Context) error {
+	playerID, err := uuid.Parse(c.Param("userID"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid playerID").SetInternal(err)
+	}
+
+	kemonos, err := h.repo.GetKemonoByOwnerIdNoImage(c.Request().Context(), playerID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error()).SetInternal(err)
+	}
+
+	res := make(GetKemonosResponseWithoutImage, len(kemonos))
+	for i, kemono := range kemonos {
+		res[i] = kemonoToGetKemonoResponse(&kemono).WithoutImage()
+	}
+
+	return c.JSON(http.StatusOK, res)
+}
+
 // GET /api/v1/users/:userID/me
 func (h *Handler) GetMyKemono(c echo.Context) error {
 	playerID, err := uuid.Parse(c.Param("userID"))

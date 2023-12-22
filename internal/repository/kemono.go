@@ -126,6 +126,15 @@ func (r *Repository) GetKemonoByOwnerId(ctx context.Context, ownerID uuid.UUID) 
 	return kemono, nil
 }
 
+func (r *Repository) GetKemonoByOwnerIdNoImage(ctx context.Context, ownerID uuid.UUID) ([]domains.Kemono, error) {
+	var kemono []domains.Kemono
+	if err := r.db.SelectContext(ctx, &kemono, fmt.Sprintf("SELECT %s FROM kemono WHERE owner_id = ? AND has_child = FALSE", domains.WithoutImageDBFields()), ownerID); err != nil {
+		return nil, fmt.Errorf("select kemono: %w", err)
+	}
+
+	return kemono, nil
+}
+
 func (r *Repository) GetMyKemonoByUserId(ctx context.Context, ownerID uuid.UUID) (*domains.Kemono, error) {
 	var kemono domains.Kemono
 	if err := r.db.GetContext(ctx, &kemono, fmt.Sprintf("SELECT %s FROM kemono WHERE owner_id = ? AND is_player = TRUE AND has_child = FALSE", domains.WithoutImageDBFields()), ownerID); err != nil {
