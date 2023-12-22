@@ -220,10 +220,17 @@ func (h *Handler) GetKemono(c echo.Context) error {
 
 // GET /api/v1/kemonos/:kemonoID/image
 func (h *Handler) GetKemonoImage(c echo.Context) error {
+	ifNoneMatch := c.Request().Header.Get("If-None-Match")
+	if ifNoneMatch == "true" {
+		return c.NoContent(http.StatusNotModified)
+	}
+
 	kemonoID, err := uuid.Parse(c.Param("kemonoID"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid kemonoID").SetInternal(err)
 	}
+
+	c.Response().Header().Set("ETag", "true")
 
 	kemonoImage, err := h.repo.GetKemonoImage(c.Request().Context(), kemonoID)
 	if errors.Is(err, sql.ErrNoRows) {
