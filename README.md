@@ -1,7 +1,10 @@
 # AIを活用したケモノ生成交配育成バトルゲーム
-ここから遊べるよ: https://ai.trap.games/
 
-## 以下テンプレート
+**ここから遊べるよ: https://ai.trap.games/**
+
+プロンプト一覧: https://github.com/pikachu0310/hackathon-23winter/blob/main/internal/api/openai_prompt.go
+
+# 以下テンプレート
 ハッカソンなど短期間でWebアプリを開発する際のバックエンドのGo実装例です。
 学習コストと開発コストを抑えることを目的としています。
 
